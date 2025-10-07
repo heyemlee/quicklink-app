@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Copy, RefreshCw, ExternalLink, X } from "lucide-react";
+import { Copy, RefreshCw, ExternalLink, X, Sparkles } from "lucide-react";
 
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,12 +10,78 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [wechatCopied, setWechatCopied] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+  const [showOfflineWarning, setShowOfflineWarning] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const modalRef = useRef(null);
+  const buttonClickTimeout = useRef(null);
+
+  // Welcome animation on first load (NFC tap)
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      setShowWelcome(true);
+      sessionStorage.setItem('hasVisited', 'true');
+      setTimeout(() => setShowWelcome(false), 2500);
+    }
+  }, []);
+
+  // Page loaded effect
+  useEffect(() => {
+    // Simulate page load complete
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Network status monitoring
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      setShowOfflineWarning(false);
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      setShowOfflineWarning(true);
+      triggerHaptic('error');
+      setTimeout(() => setShowOfflineWarning(false), 3000);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Haptic feedback helper
+  const triggerHaptic = (type = 'light') => {
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+      const patterns = {
+        light: [10],
+        medium: [20],
+        heavy: [30],
+        success: [10, 50, 10],
+        error: [50, 100, 50]
+      };
+      window.navigator.vibrate(patterns[type] || patterns.light);
+    }
+  };
 
   // Platform configurations for reviews
   const reviewPlatforms = [
     {
       id: "xiaohongshu",
-      name: "Xiaohongshu",
+      name: "小红书",
       icon: "/icons/xiaohongshu.png",
       isImage: true,
       color: "bg-red-500",
@@ -56,7 +122,7 @@ const App = () => {
   const followPlatforms = [
     {
       id: "xiaohongshu",
-      name: "Xiaohongshu",
+      name: "小红书",
       icon: "/icons/xiaohongshu.png",
       isImage: true,
       color: "bg-red-500",
@@ -104,7 +170,7 @@ const App = () => {
       name: "KABI",
       icon: "/icons/kabi.png",
       isImage: true,
-      color: "bg-black",
+      color: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
       appScheme: "https://www.la-kabi.com/",
       fallbackUrl: "https://www.la-kabi.com/",
     },
@@ -112,6 +178,8 @@ const App = () => {
 
   const generateReview = async (platformId) => {
     setIsLoading(true);
+    triggerHaptic('light');
+    
     try {
       const response = await fetch("/api/generate-review", {
         method: "POST",
@@ -127,6 +195,7 @@ const App = () => {
 
       const data = await response.json();
       setReviewText(data.review);
+      triggerHaptic('success');
     } catch (error) {
       const mockReviews = [
         "Amazing experience! The service was outstanding and the atmosphere was perfect. Highly recommend to everyone! ⭐⭐⭐⭐⭐",
@@ -137,20 +206,33 @@ const App = () => {
       setReviewText(
         mockReviews[Math.floor(Math.random() * mockReviews.length)]
       );
+      triggerHaptic('success');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handlePlatformClick = async (platform) => {
+    // Prevent double-click
+    if (buttonClickTimeout.current) return;
+    
+    triggerHaptic('medium');
     setSelectedPlatform(platform);
     setIsModalOpen(true);
     setCopySuccess(false);
+    
+    // Debounce button clicks
+    buttonClickTimeout.current = setTimeout(() => {
+      buttonClickTimeout.current = null;
+    }, 500);
+    
     await generateReview(platform.id);
   };
 
   const handleRefresh = () => {
+    if (isLoading) return;
     setCopySuccess(false);
+    triggerHaptic('light');
     generateReview(selectedPlatform.id);
   };
 
@@ -158,15 +240,25 @@ const App = () => {
     try {
       await navigator.clipboard.writeText(reviewText);
       setCopySuccess(true);
+      triggerHaptic('success');
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
       console.error("Failed to copy text:", err);
+      triggerHaptic('error');
     }
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    if (isPublishing) return;
+    
+    setIsPublishing(true);
+    triggerHaptic('heavy');
+    
     // First copy the text
-    handleCopy();
+    await handleCopy();
+
+    // Small delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     // Create an invisible iframe to try opening the app
     const iframe = document.createElement("iframe");
@@ -195,18 +287,24 @@ const App = () => {
       if (!appOpened && Date.now() - startTime < 2500) {
         window.open(selectedPlatform.fallbackUrl, "_blank");
       }
+      
+      setIsPublishing(false);
     }, 2000);
   };
 
   const handleFollowClick = async (platform) => {
+    triggerHaptic('medium');
+    
     // Special handling for WeChat - copy ID first
     if (platform.id === "wechat") {
       try {
         await navigator.clipboard.writeText("KABI-Design");
         setWechatCopied(true);
+        triggerHaptic('success');
         setTimeout(() => setWechatCopied(false), 3000);
       } catch (err) {
         console.error("Failed to copy WeChat ID:", err);
+        triggerHaptic('error');
       }
     }
 
@@ -244,8 +342,45 @@ const App = () => {
     }, 2000);
   };
 
+  // Handle swipe down to close modal
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd < -100) {
+      // Swiped down
+      triggerHaptic('light');
+      setIsModalOpen(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Loading Progress Bar */}
+      {pageLoading && (
+        <div className="fixed top-0 left-0 right-0 z-[101]">
+          <div className="h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-pulse"></div>
+        </div>
+      )}
+
+      {/* Welcome Animation */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-[100] bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center animate-fadeIn">
+          <div className="text-center animate-bounceIn">
+            <div className="bg-white rounded-full p-6 mb-4 inline-block shadow-2xl">
+              <Sparkles size={48} className="text-purple-600 animate-pulse" />
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2">Welcome!</h2>
+            <p className="text-white text-lg opacity-90">Thank you for visiting KABI</p>
+          </div>
+        </div>
+      )}
+
       {/* Header - Fixed for mobile */}
       <header className="bg-white shadow-md sticky top-0 z-40 border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -275,15 +410,19 @@ const App = () => {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-20">
         {/* Section 1: Follow Us */}
         <section className="mb-8 sm:mb-12">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
-            Follow us
-          </h2>
+          <div className="flex items-center gap-3 mb-4 sm:mb-6">
+            <div className="flex-shrink-0 w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+              Follow us
+            </h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
             {followPlatforms.map((platform) => (
               <button
                 key={platform.id}
                 onClick={() => handleFollowClick(platform)}
-                className={`${platform.color} text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-2 sm:gap-3 min-h-[100px] sm:min-h-[120px]`}
+                className={`${platform.color} text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-2 sm:gap-3 min-h-[100px] sm:min-h-[120px] touch-manipulation`}
               >
                 {platform.isImage ? (
                   <div className="bg-white rounded-full p-2 sm:p-3 flex items-center justify-center">
@@ -311,15 +450,19 @@ const App = () => {
 
         {/* Section 2: Write Reviews */}
         <section>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
-            Write a Good Review
-          </h2>
+          <div className="flex items-center gap-3 mb-4 sm:mb-6">
+            <div className="flex-shrink-0 w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-full"></div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+              Write a Good Review
+            </h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {reviewPlatforms.map((platform) => (
               <button
                 key={platform.id}
                 onClick={() => handlePlatformClick(platform)}
-                className={`${platform.color} text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-2 sm:gap-3 min-h-[100px] sm:min-h-[120px]`}
+                className={`${platform.color} text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-2 sm:gap-3 min-h-[100px] sm:min-h-[120px] touch-manipulation`}
               >
                 {platform.isImage ? (
                   <div className="bg-white rounded-full p-2 sm:p-3 flex items-center justify-center">
@@ -345,13 +488,25 @@ const App = () => {
       {/* Review Modal - Mobile Optimized */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
-          onClick={() => setIsModalOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fadeIn"
+          onClick={() => {
+            triggerHaptic('light');
+            setIsModalOpen(false);
+          }}
         >
           <div
-            className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:w-full sm:max-w-lg h-[75vh] sm:h-auto sm:max-h-[70vh] overflow-hidden flex flex-col"
+            ref={modalRef}
+            className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:w-full sm:max-w-lg h-[75vh] sm:h-auto sm:max-h-[70vh] overflow-hidden flex flex-col animate-slideUp"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
+            {/* Swipe indicator */}
+            <div className="flex justify-center pt-2 pb-1 sm:hidden">
+              <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+            </div>
+
             {/* Modal Header */}
             <div
               className={`${selectedPlatform?.color} text-white p-4 sm:p-6 flex items-center justify-between flex-shrink-0`}
@@ -393,13 +548,23 @@ const App = () => {
             <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
               {/* Generated Review Text */}
               <div className="relative">
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <Sparkles size={16} className="text-purple-600" />
                   AI Generated Review
                 </label>
-                <div className="bg-gray-50 rounded-xl p-3 sm:p-4 border-2 border-gray-200 min-h-[100px] sm:min-h-[120px]">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 sm:p-5 border-2 border-gray-200 min-h-[100px] sm:min-h-[120px] relative overflow-hidden">
                   {isLoading ? (
-                    <div className="flex items-center justify-center h-20 sm:h-24">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    <div className="space-y-3">
+                      {/* Skeleton loader */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-purple-500 border-t-transparent"></div>
+                        <span className="text-sm text-gray-600 animate-pulse">Generating your review...</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-3 bg-gray-300 rounded animate-pulse w-full"></div>
+                        <div className="h-3 bg-gray-300 rounded animate-pulse w-11/12"></div>
+                        <div className="h-3 bg-gray-300 rounded animate-pulse w-4/5"></div>
+                      </div>
                     </div>
                   ) : (
                     <p className="text-sm sm:text-base text-gray-800 leading-relaxed">
@@ -408,7 +573,8 @@ const App = () => {
                   )}
                 </div>
                 {copySuccess && (
-                  <div className="absolute -top-2 right-0 bg-green-500 text-white text-xs py-1 px-3 rounded-full animate-bounce">
+                  <div className="absolute -top-2 right-0 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs py-1.5 px-4 rounded-full animate-bounce shadow-lg flex items-center gap-1">
+                    <Copy size={12} />
                     Copied!
                   </div>
                 )}
@@ -419,7 +585,7 @@ const App = () => {
                 <button
                   onClick={handleRefresh}
                   disabled={isLoading}
-                  className="flex-1 bg-gray-200 text-gray-700 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium hover:bg-gray-300 active:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-gray-200 text-gray-700 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium hover:bg-gray-300 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                 >
                   <RefreshCw
                     size={16}
@@ -431,27 +597,31 @@ const App = () => {
                 <button
                   onClick={handleCopy}
                   disabled={isLoading}
-                  className="flex-1 bg-blue-500 text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium hover:bg-blue-600 active:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-blue-500 text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium hover:bg-blue-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                 >
                   <Copy size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  Copy
+                  {copySuccess ? 'Copied!' : 'Copy'}
                 </button>
               </div>
 
               {/* Publish Button */}
               <button
                 onClick={handlePublish}
-                disabled={isLoading}
-                className={`w-full ${selectedPlatform?.color} text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg hover:opacity-90 active:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg`}
+                disabled={isLoading || isPublishing}
+                className={`w-full ${selectedPlatform?.color} text-white py-3.5 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl`}
               >
-                <ExternalLink size={18} className="sm:w-5 sm:h-5" />
-                Go to Publish
+                {isPublishing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                    Opening...
+                  </>
+                ) : (
+                  <>
+                    <ExternalLink size={18} className="sm:w-5 sm:h-5" />
+                    Go to Publish
+                  </>
+                )}
               </button>
-
-              <p className="text-[10px] sm:text-xs text-gray-500 text-center leading-relaxed px-2">
-                Text will be copied automatically. Paste it in the app to
-                publish your review.
-              </p>
             </div>
           </div>
         </div>
@@ -459,14 +629,38 @@ const App = () => {
 
       {/* WeChat ID Copied Toast */}
       {wechatCopied && (
-        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
-          <div className="bg-green-500 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
-            <Copy size={20} />
+        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 animate-slideUp">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white">
+            <div className="bg-white rounded-full p-2">
+              <Copy size={18} className="text-green-600" />
+            </div>
             <div className="text-sm font-medium">
-              <div>WeChat ID Copied!</div>
+              <div className="font-bold">WeChat ID Copied!</div>
               <div className="text-xs opacity-90">KABI-Design</div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Offline Warning Toast */}
+      {showOfflineWarning && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-slideUp">
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white">
+            <div className="bg-white rounded-full p-2">
+              <span className="text-lg">📡</span>
+            </div>
+            <div className="text-sm font-medium">
+              <div className="font-bold">No Internet Connection</div>
+              <div className="text-xs opacity-90">Some features may not work</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Online Status Indicator - subtle */}
+      {!isOnline && !showOfflineWarning && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 px-4 py-2 bg-gray-800 text-white text-xs rounded-full shadow-lg opacity-75">
+          Offline Mode
         </div>
       )}
     </div>
