@@ -264,36 +264,53 @@ const App = () => {
     // Small delay for better UX
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Create an invisible iframe to try opening the app
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = selectedPlatform.appScheme;
-    document.body.appendChild(iframe);
+    // Safari-compatible app opening method
+    let hasBlurred = false;
+    let timeoutId;
 
-    // Track if app opened
-    let appOpened = false;
-    const startTime = Date.now();
+    // Track if page loses focus (app opened)
+    const blurHandler = () => {
+      hasBlurred = true;
+    };
 
-    // Listen for visibility change (app opening will hide the page)
     const visibilityHandler = () => {
       if (document.hidden) {
-        appOpened = true;
+        hasBlurred = true;
       }
     };
-    document.addEventListener("visibilitychange", visibilityHandler);
 
-    // Fallback to web URL if app doesn't open
-    setTimeout(() => {
-      document.removeEventListener("visibilitychange", visibilityHandler);
-      document.body.removeChild(iframe);
+    window.addEventListener('blur', blurHandler);
+    document.addEventListener('visibilitychange', visibilityHandler);
+
+    // Try to open the app using direct location change (better for Safari)
+    try {
+      window.location.href = selectedPlatform.appScheme;
+    } catch (e) {
+      console.log('Failed to open app scheme:', e);
+    }
+
+    // Fallback to web URL if app doesn't open within 2 seconds
+    timeoutId = setTimeout(() => {
+      window.removeEventListener('blur', blurHandler);
+      document.removeEventListener('visibilitychange', visibilityHandler);
       
-      // If app didn't open and we're still here, open fallback
-      if (!appOpened && Date.now() - startTime < 2500) {
-        window.open(selectedPlatform.fallbackUrl, "_blank");
+      // If app didn't open (page didn't blur) and we're still here, open fallback
+      if (!hasBlurred) {
+        window.open(selectedPlatform.fallbackUrl, '_blank');
       }
       
       setIsPublishing(false);
     }, 2000);
+
+    // Clean up if user comes back quickly (app opened successfully)
+    setTimeout(() => {
+      if (hasBlurred) {
+        clearTimeout(timeoutId);
+        window.removeEventListener('blur', blurHandler);
+        document.removeEventListener('visibilitychange', visibilityHandler);
+        setIsPublishing(false);
+      }
+    }, 500);
   };
 
   const handleFollowClick = async (platform) => {
@@ -318,32 +335,50 @@ const App = () => {
       return;
     }
 
-    // Create an invisible iframe to try opening the app
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = platform.appScheme;
-    document.body.appendChild(iframe);
+    // Safari-compatible app opening method
+    let hasBlurred = false;
+    let timeoutId;
 
-    // Track if app opened
-    let appOpened = false;
+    // Track if page loses focus (app opened)
+    const blurHandler = () => {
+      hasBlurred = true;
+    };
 
-    // Listen for visibility change
     const visibilityHandler = () => {
       if (document.hidden) {
-        appOpened = true;
+        hasBlurred = true;
       }
     };
-    document.addEventListener("visibilitychange", visibilityHandler);
 
-    // Fallback to web URL if app doesn't open
-    setTimeout(() => {
-      document.removeEventListener("visibilitychange", visibilityHandler);
-      document.body.removeChild(iframe);
+    window.addEventListener('blur', blurHandler);
+    document.addEventListener('visibilitychange', visibilityHandler);
+
+    // Try to open the app using direct location change (better for Safari)
+    try {
+      window.location.href = platform.appScheme;
+    } catch (e) {
+      console.log('Failed to open app scheme:', e);
+    }
+
+    // Fallback to web URL if app doesn't open within 2 seconds
+    timeoutId = setTimeout(() => {
+      window.removeEventListener('blur', blurHandler);
+      document.removeEventListener('visibilitychange', visibilityHandler);
       
-      if (!appOpened) {
-        window.open(platform.fallbackUrl, "_blank");
+      // If app didn't open (page didn't blur), open fallback
+      if (!hasBlurred) {
+        window.open(platform.fallbackUrl, '_blank');
       }
     }, 2000);
+
+    // Clean up if user comes back quickly (app opened successfully)
+    setTimeout(() => {
+      if (hasBlurred) {
+        clearTimeout(timeoutId);
+        window.removeEventListener('blur', blurHandler);
+        document.removeEventListener('visibilitychange', visibilityHandler);
+      }
+    }, 500);
   };
 
   // Handle swipe down to close modal
