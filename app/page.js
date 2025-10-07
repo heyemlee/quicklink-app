@@ -130,7 +130,7 @@ const App = () => {
       icon: "/icons/xiaohongshu.png",
       isImage: true,
       color: "bg-red-500",
-      appScheme: "xhsdiscover://user/YOUR_USER_ID",
+      appScheme: "xhsdiscover://user/4367817339",
       fallbackUrl: "https://xhslink.com/m/22MB8xOCPQb",
     },
     {
