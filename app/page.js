@@ -1,103 +1,313 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from "react";
+import { Copy, RefreshCw, ExternalLink, X } from "lucide-react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const [reviewText, setReviewText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Platform configurations for reviews
+  const reviewPlatforms = [
+    {
+      id: "xiaohongshu",
+      name: "Xiaohongshu",
+      icon: "📕",
+      color: "bg-red-500",
+      appScheme: "xhsdiscover://",
+      fallbackUrl: "https://www.xiaohongshu.com",
+    },
+    {
+      id: "yelp",
+      name: "Yelp",
+      icon: "🔴",
+      color: "bg-red-600",
+      appScheme: "yelp://",
+      fallbackUrl: "https://www.yelp.com",
+    },
+    {
+      id: "googlemap",
+      name: "Google Maps",
+      icon: "🗺️",
+      color: "bg-blue-500",
+      appScheme: "comgooglemaps://",
+      fallbackUrl: "https://maps.google.com",
+    },
+    {
+      id: "instagram",
+      name: "Instagram",
+      icon: "📸",
+      color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500",
+      appScheme: "instagram://",
+      fallbackUrl: "https://www.instagram.com",
+    },
+  ];
+
+  // Platform configurations for following
+  const followPlatforms = [
+    {
+      id: "xiaohongshu",
+      name: "Xiaohongshu",
+      icon: "📕",
+      color: "bg-red-500",
+      appScheme: "xhsdiscover://user/YOUR_USER_ID",
+      fallbackUrl: "https://www.xiaohongshu.com/user/profile/YOUR_USER_ID",
+    },
+    {
+      id: "tiktok",
+      name: "TikTok",
+      icon: "🎵",
+      color: "bg-black",
+      appScheme: "snssdk1233://user/profile/YOUR_USER_ID",
+      fallbackUrl: "https://www.tiktok.com/@YOUR_HANDLE",
+    },
+    {
+      id: "instagram",
+      name: "Instagram",
+      icon: "📸",
+      color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500",
+      appScheme: "instagram://user?username=YOUR_HANDLE",
+      fallbackUrl: "https://www.instagram.com/YOUR_HANDLE",
+    },
+    {
+      id: "facebook",
+      name: "Facebook",
+      icon: "👥",
+      color: "bg-blue-600",
+      appScheme: "fb://profile/YOUR_PAGE_ID",
+      fallbackUrl: "https://www.facebook.com/YOUR_PAGE",
+    },
+    {
+      id: "wechat",
+      name: "WeChat",
+      icon: "💬",
+      color: "bg-green-500",
+      appScheme: "weixin://dl/profile/YOUR_WECHAT_ID",
+      fallbackUrl: "https://weixin.qq.com",
+    },
+  ];
+
+  const generateReview = async (platformId) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/generate-review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ platform: platformId }),
+      });
+
+      if (!response.ok) throw new Error("API call failed");
+
+      const data = await response.json();
+      setReviewText(data.review);
+    } catch (error) {
+      const mockReviews = [
+        "Amazing experience! The service was outstanding and the atmosphere was perfect. Highly recommend to everyone! ⭐⭐⭐⭐⭐",
+        "Absolutely loved it! Great quality, friendly staff, and excellent value. Will definitely come back again! 💯",
+        "Fantastic! Everything exceeded my expectations. The attention to detail was impressive. A must-visit place! ✨",
+        "Outstanding service and wonderful experience! The team went above and beyond. Couldn't be happier! 🌟",
+      ];
+      setReviewText(
+        mockReviews[Math.floor(Math.random() * mockReviews.length)]
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePlatformClick = async (platform) => {
+    setSelectedPlatform(platform);
+    setIsModalOpen(true);
+    setCopySuccess(false);
+    await generateReview(platform.id);
+  };
+
+  const handleRefresh = () => {
+    setCopySuccess(false);
+    generateReview(selectedPlatform.id);
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(reviewText);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
+  };
+
+  const handlePublish = () => {
+    const link = document.createElement("a");
+    link.href = selectedPlatform.appScheme;
+    link.click();
+    handleCopy();
+    setTimeout(() => {
+      if (document.hidden) return;
+      window.open(selectedPlatform.fallbackUrl, "_blank");
+    }, 1500);
+  };
+
+  const handleFollowClick = (platform) => {
+    const link = document.createElement("a");
+    link.href = platform.appScheme;
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      if (document.hidden) return;
+      window.open(platform.fallbackUrl, "_blank");
+    }, 1500);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <h1 className="text-2xl font-bold text-gray-800">
+            Share Your Experience
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Help us grow by sharing your thoughts
+          </p>
         </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            Write a Good Review
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {reviewPlatforms.map((platform) => (
+              <button
+                key={platform.id}
+                onClick={() => handlePlatformClick(platform)}
+                className={`${platform.color} text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center gap-3`}
+              >
+                <span className="text-4xl">{platform.icon}</span>
+                <span className="font-medium text-sm">{platform.name}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            Follow Us
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {followPlatforms.map((platform) => (
+              <button
+                key={platform.id}
+                onClick={() => handleFollowClick(platform)}
+                className={`${platform.color} text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center gap-3`}
+              >
+                <span className="text-4xl">{platform.icon}</span>
+                <span className="font-medium text-sm">{platform.name}</span>
+                <span className="text-xs opacity-80">Tap to Follow</span>
+              </button>
+            ))}
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+      {isModalOpen && (
+        <div
+          className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setIsModalOpen(false)}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <div
+            className="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[70vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className={`${selectedPlatform?.color} text-white p-6 flex items-center justify-between`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{selectedPlatform?.icon}</span>
+                <div>
+                  <h3 className="font-bold text-lg">Write a Review</h3>
+                  <p className="text-sm opacity-90">{selectedPlatform?.name}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  AI Generated Review
+                </label>
+                <div className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200 min-h-[120px]">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-24">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-800 leading-relaxed">
+                      {reviewText}
+                    </p>
+                  )}
+                </div>
+                {copySuccess && (
+                  <div className="absolute -top-2 right-0 bg-green-500 text-white text-xs py-1 px-3 rounded-full">
+                    Copied!
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                  className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <RefreshCw
+                    size={18}
+                    className={isLoading ? "animate-spin" : ""}
+                  />
+                  Regenerate
+                </button>
+                <button
+                  onClick={handleCopy}
+                  disabled={isLoading}
+                  className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-xl font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <Copy size={18} />
+                  Copy Text
+                </button>
+              </div>
+
+              <button
+                onClick={handlePublish}
+                disabled={isLoading}
+                className={`w-full ${selectedPlatform?.color} text-white py-4 px-6 rounded-xl font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg`}
+              >
+                <ExternalLink size={20} />
+                Go to Publish
+              </button>
+
+              <p className="text-xs text-gray-500 text-center">
+                Text will be copied automatically. Paste it in the app to
+                publish your review.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
