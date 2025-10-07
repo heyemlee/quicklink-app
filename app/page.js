@@ -10,7 +10,13 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [wechatCopied, setWechatCopied] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
+  // Initialize showWelcome based on whether user has visited before
+  const [showWelcome, setShowWelcome] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('hasVisited');
+    }
+    return false;
+  });
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -22,13 +28,11 @@ const App = () => {
 
   // Welcome animation on first load (NFC tap)
   useEffect(() => {
-    const hasVisited = sessionStorage.getItem('hasVisited');
-    if (!hasVisited) {
-      setShowWelcome(true);
+    if (showWelcome) {
       sessionStorage.setItem('hasVisited', 'true');
-      setTimeout(() => setShowWelcome(false), 2500);
+      setTimeout(() => setShowWelcome(false), 1000); // 1 second animation
     }
-  }, []);
+  }, [showWelcome]);
 
   // Page loaded effect
   useEffect(() => {
