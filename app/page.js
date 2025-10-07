@@ -89,7 +89,7 @@ const App = () => {
       icon: "/icons/xiaohongshu.png",
       isImage: true,
       color: "bg-red-500",
-      appScheme: "xhsdiscover://item/new",
+      appScheme: "xhsdiscover://",
       fallbackUrl: "https://www.xiaohongshu.com/explore",
     },
     {
@@ -104,12 +104,12 @@ const App = () => {
     },
     {
       id: "googlemap",
-      name: "Google Maps",
+      name: "Google",
       icon: "/icons/google.png",
       isImage: true,
       color: "bg-blue-500",
       appScheme: "comgooglemaps://?q=YourBusinessName&center=40.7484,-73.9857",
-      fallbackUrl: "https://www.google.com/maps/search/?api=1&query=YourBusinessName",
+      fallbackUrl: "https://g.page/r/CffWB10nyKpfEAE/review",
     },
     {
       id: "instagram",
