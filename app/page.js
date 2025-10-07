@@ -251,12 +251,12 @@ const App = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 sm:mb-4">
-              Share Your Experience
+            KABI - Kitchen and Bath Cabinet
             </h1>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-gray-700">
-              <a href="tel:6692256456" className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+              <a href="tel:6692981888" className="flex items-center gap-2 hover:text-blue-600 transition-colors">
                 <span className="text-lg">📞</span>
-                <span className="text-sm sm:text-base font-medium">(669) 225-6456</span>
+                <span className="text-sm sm:text-base font-medium">(669) 298-1888</span>
               </a>
               <span className="hidden sm:inline text-gray-300">|</span>
               <a 
@@ -273,41 +273,8 @@ const App = () => {
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-20">
-        {/* Section 1: Write Reviews */}
+        {/* Section 1: Follow Us */}
         <section className="mb-8 sm:mb-12">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
-            Write a Good Review
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            {reviewPlatforms.map((platform) => (
-              <button
-                key={platform.id}
-                onClick={() => handlePlatformClick(platform)}
-                className={`${platform.color} text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-2 sm:gap-3 min-h-[100px] sm:min-h-[120px]`}
-              >
-                {platform.isImage ? (
-                  <div className="bg-white rounded-full p-2 sm:p-3 flex items-center justify-center">
-                    <Image 
-                      src={platform.icon} 
-                      alt={platform.name}
-                      width={64}
-                      height={64}
-                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
-                    />
-                  </div>
-                ) : (
-                  <span className="text-3xl sm:text-4xl">{platform.icon}</span>
-                )}
-                <span className="font-medium text-xs sm:text-sm text-center leading-tight">
-                  {platform.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Section 2: Follow Us */}
-        <section>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
             Follow us
           </h2>
@@ -336,6 +303,39 @@ const App = () => {
                 </span>
                 <span className="text-[10px] sm:text-xs opacity-80">
                   Tap to Follow
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Section 2: Write Reviews */}
+        <section>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
+            Write a Good Review
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {reviewPlatforms.map((platform) => (
+              <button
+                key={platform.id}
+                onClick={() => handlePlatformClick(platform)}
+                className={`${platform.color} text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-2 sm:gap-3 min-h-[100px] sm:min-h-[120px]`}
+              >
+                {platform.isImage ? (
+                  <div className="bg-white rounded-full p-2 sm:p-3 flex items-center justify-center">
+                    <Image 
+                      src={platform.icon} 
+                      alt={platform.name}
+                      width={64}
+                      height={64}
+                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-3xl sm:text-4xl">{platform.icon}</span>
+                )}
+                <span className="font-medium text-xs sm:text-sm text-center leading-tight">
+                  {platform.name}
                 </span>
               </button>
             ))}
