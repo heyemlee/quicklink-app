@@ -10,13 +10,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [wechatCopied, setWechatCopied] = useState(false);
-  // Initialize showWelcome based on whether user has visited before
-  const [showWelcome, setShowWelcome] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !sessionStorage.getItem('hasVisited');
-    }
-    return false;
-  });
+  const [showWelcome, setShowWelcome] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -26,13 +20,15 @@ const App = () => {
   const modalRef = useRef(null);
   const buttonClickTimeout = useRef(null);
 
-  // Welcome animation on first load (NFC tap)
+  // Welcome animation on first load (NFC tap) - client-side only
   useEffect(() => {
-    if (showWelcome) {
+    const hasVisited = sessionStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      setShowWelcome(true);
       sessionStorage.setItem('hasVisited', 'true');
       setTimeout(() => setShowWelcome(false), 1000); // 1 second animation
     }
-  }, [showWelcome]);
+  }, []);
 
   // Page loaded effect
   useEffect(() => {
@@ -130,7 +126,7 @@ const App = () => {
       icon: "/icons/xiaohongshu.png",
       isImage: true,
       color: "bg-red-500",
-      appScheme: "xhsdiscover://user/4367817339",
+      appScheme: "xhsdiscover://user/64b8123700000000140399ef",
       fallbackUrl: "https://xhslink.com/m/22MB8xOCPQb",
     },
     {
