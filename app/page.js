@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Copy, RefreshCw, ExternalLink, X, Sparkles } from "lucide-react";
+import { contactInfo } from "./contactConfig";
 
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -377,6 +378,50 @@ const App = () => {
     }, 500);
   };
 
+  // Save contact to phone
+  const handleSaveContact = () => {
+    triggerHaptic('medium');
+    
+    // Create vCard content (contact info from contactConfig.js)
+    const vCard = `BEGIN:VCARD
+VERSION:3.0
+FN:${contactInfo.name}
+TEL;TYPE=WORK,VOICE:${contactInfo.phone}
+EMAIL;TYPE=WORK:${contactInfo.email}
+ADR;TYPE=WORK:;;${contactInfo.address}
+URL:${contactInfo.website}
+ORG:${contactInfo.organization}
+END:VCARD`;
+
+    // Check if mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // For mobile: use data URI to directly open contact
+      const dataUri = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vCard);
+      const link = document.createElement('a');
+      link.href = dataUri;
+      link.download = 'KABI_Contact.vcf';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // For desktop: create blob and download
+      const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'KABI_Contact.vcf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
+    
+    triggerHaptic('success');
+  };
+
   // Handle swipe down to close modal
   const handleTouchStart = (e) => {
     setTouchStart(e.touches[0].clientY);
@@ -420,9 +465,14 @@ const App = () => {
       <header className="bg-white shadow-md sticky top-0 z-40 border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="text-center">
-            <h1 className="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 sm:mb-4">
-            KABI - Kitchen and Bath Cabinet
-            </h1>
+            <div className="mb-4 sm:mb-5">
+              <h1 className="text-4xl sm:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight leading-none mb-1.5">
+                KABi
+              </h1>
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 tracking-wide uppercase">
+                Kitchen and Bath Institute
+              </p>
+            </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-gray-700">
               <a href="tel:6692981888" className="flex items-center gap-2 hover:text-blue-600 transition-colors">
                 <span className="text-lg">📞</span>
@@ -443,12 +493,45 @@ const App = () => {
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-20">
+        {/* Save Contact Section */}
+        <section className="mb-8 sm:mb-12">
+          <button
+            onClick={handleSaveContact}
+            className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-98 sm:hover:scale-[1.02] flex items-center justify-between group touch-manipulation"
+          >
+            <div className="flex items-center gap-4">
+              <div className="bg-white rounded-full p-3 sm:p-4 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="text-3xl sm:text-4xl">📇</span>
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-lg sm:text-xl mb-1">Save My Contact</h3>
+                <p className="text-sm sm:text-base opacity-90">Add to your phone contacts</p>
+              </div>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-full p-2 sm:p-3 group-hover:bg-opacity-30 transition-all">
+              <svg 
+                className="w-5 h-5 sm:w-6 sm:h-6" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M12 4v16m8-8H4" 
+                />
+              </svg>
+            </div>
+          </button>
+        </section>
+
         {/* Section 1: Follow Us */}
         <section className="mb-8 sm:mb-12">
           <div className="flex items-center gap-3 mb-4 sm:mb-6">
             <div className="flex-shrink-0 w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-              Follow us
+              Follow Us
             </h2>
             <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
           </div>
@@ -457,26 +540,23 @@ const App = () => {
               <button
                 key={platform.id}
                 onClick={() => handleFollowClick(platform)}
-                className={`${platform.color} text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-2 sm:gap-3 min-h-[100px] sm:min-h-[120px] touch-manipulation`}
+                className={`${platform.color} text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105 flex flex-col items-center justify-center gap-1.5 sm:gap-2 min-h-[80px] sm:min-h-[100px] touch-manipulation`}
               >
                 {platform.isImage ? (
-                  <div className="bg-white rounded-full p-2 sm:p-3 flex items-center justify-center">
+                  <div className="bg-white rounded-full p-1.5 sm:p-2 flex items-center justify-center">
                     <Image 
                       src={platform.icon} 
                       alt={platform.name}
-                      width={64}
-                      height={64}
-                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                      width={48}
+                      height={48}
+                      className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
                     />
                   </div>
                 ) : (
-                  <span className="text-3xl sm:text-4xl">{platform.icon}</span>
+                  <span className="text-2xl sm:text-3xl">{platform.icon}</span>
                 )}
                 <span className="font-medium text-xs sm:text-sm text-center leading-tight">
                   {platform.name}
-                </span>
-                <span className="text-[10px] sm:text-xs opacity-80">
-                  Tap to Follow
                 </span>
               </button>
             ))}
