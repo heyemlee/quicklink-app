@@ -4,7 +4,12 @@ export const metadata = {
   title: "Share Your Experience - Review & Follow",
   description:
     "Help us grow by sharing your thoughts and following us on social media",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }) {
