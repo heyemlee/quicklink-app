@@ -111,13 +111,13 @@ const App = () => {
   // Platform configurations for following
   const followPlatforms = [
     {
-      id: "xiaohongshu",
-      name: "小红书",
-      icon: "/icons/xiaohongshu.png",
+      id: "website",
+      name: "KABI",
+      icon: "/icons/kabi.png",
       isImage: true,
-      color: "bg-red-500",
-      appScheme: "xhsdiscover://user/64b8123700000000140399ef",
-      fallbackUrl: "https://xhslink.com/m/22MB8xOCPQb",
+      color: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
+      appScheme: "https://www.la-kabi.com/",
+      fallbackUrl: "https://www.la-kabi.com/",
     },
     {
       id: "tiktok",
@@ -156,13 +156,13 @@ const App = () => {
       fallbackUrl: "https://weixin.qq.com",
     },
     {
-      id: "website",
-      name: "KABI",
-      icon: "/icons/kabi.png",
+      id: "xiaohongshu",
+      name: "小红书",
+      icon: "/icons/xiaohongshu.png",
       isImage: true,
-      color: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
-      appScheme: "https://www.la-kabi.com/",
-      fallbackUrl: "https://www.la-kabi.com/",
+      color: "bg-red-500",
+      appScheme: "xhsdiscover://user/64b8123700000000140399ef",
+      fallbackUrl: "https://xhslink.com/m/22MB8xOCPQb",
     },
   ];
 
