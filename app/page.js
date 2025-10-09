@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Copy, RefreshCw, ExternalLink, X, Sparkles } from "lucide-react";
+import { Copy, RefreshCw, ExternalLink, X, Sparkles, UserPlus, Phone, Contact } from "lucide-react";
 import { contactInfo } from "./contactConfig";
 
 const App = () => {
@@ -11,7 +11,6 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [wechatCopied, setWechatCopied] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -20,16 +19,6 @@ const App = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const modalRef = useRef(null);
   const buttonClickTimeout = useRef(null);
-
-  // Welcome animation on first load (NFC tap) - client-side only
-  useEffect(() => {
-    const hasVisited = sessionStorage.getItem('hasVisited');
-    if (!hasVisited) {
-      setShowWelcome(true);
-      sessionStorage.setItem('hasVisited', 'true');
-      setTimeout(() => setShowWelcome(false), 1000); // 1 second animation
-    }
-  }, []);
 
   // Page loaded effect
   useEffect(() => {
@@ -385,6 +374,7 @@ const App = () => {
     // Create vCard content (contact info from contactConfig.js)
     const vCard = `BEGIN:VCARD
 VERSION:3.0
+N:${contactInfo.name};;;;
 FN:${contactInfo.name}
 TEL;TYPE=WORK,VOICE:${contactInfo.phone}
 EMAIL;TYPE=WORK:${contactInfo.email}
@@ -448,19 +438,6 @@ END:VCARD`;
         </div>
       )}
 
-      {/* Welcome Animation */}
-      {showWelcome && (
-        <div className="fixed inset-0 z-[100] bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center animate-fadeIn">
-          <div className="text-center animate-bounceIn">
-            <div className="bg-white rounded-full p-6 mb-4 inline-block shadow-2xl">
-              <Sparkles size={48} className="text-purple-600 animate-pulse" />
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-2">Welcome!</h2>
-            <p className="text-white text-lg opacity-90">Thank you for visiting KABI</p>
-          </div>
-        </div>
-      )}
-
       {/* Header - Fixed for mobile */}
       <header className="bg-white shadow-md sticky top-0 z-40 border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -501,7 +478,7 @@ END:VCARD`;
           >
             <div className="flex items-center gap-4">
               <div className="bg-white rounded-full p-3 sm:p-4 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span className="text-3xl sm:text-4xl">📇</span>
+                <UserPlus size={32} className="text-purple-600" />
               </div>
               <div className="text-left">
                 <h3 className="font-bold text-lg sm:text-xl mb-1">Save My Contact</h3>
