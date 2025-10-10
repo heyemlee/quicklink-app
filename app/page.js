@@ -81,7 +81,7 @@ const App = () => {
     {
       id: "yelp",
       name: "Yelp",
-      icon: "/yelp.png",
+      icon: "/icons/yelp.png",
       isImage: true,
       color: "bg-red-600",
       appScheme: "yelp:///write_review",
