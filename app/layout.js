@@ -1,9 +1,14 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Share Your Experience - Review & Follow",
+  title: "KABi Design",
   description:
     "Help us grow by sharing your thoughts and following us on social media",
+  icons: {
+    icon: "/icons/kabi_favicon.png",
+    apple: "/icons/kabi_favicon.png",
+    shortcut: "/icons/kabi_favicon.png",
+  },
 };
 
 export const viewport = {
@@ -16,8 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <meta name="theme-color" content="#ffffff" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="theme-color" content="#7c3aed" />
       </head>
       <body>{children}</body>
     </html>
