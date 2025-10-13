@@ -62,43 +62,49 @@ export async function PUT(request) {
 
     const data = await request.json()
 
+    // 准备更新数据，将数组序列化为JSON字符串
+    const updateData = {
+      // 基本信息
+      companyName: data.companyName,
+      phone: data.phone,
+      address: data.address,
+      email: data.email,
+      
+      // 社交媒体
+      wechatId: data.wechatId,
+      instagram: data.instagram,
+      facebook: data.facebook,
+      tiktok: data.tiktok,
+      xiaohongshu: data.xiaohongshu,
+      yelp: data.yelp,
+      google: data.google,
+      
+      // 评价平台链接
+      googleReviewUrl: data.googleReviewUrl,
+      yelpReviewUrl: data.yelpReviewUrl,
+      facebookReviewUrl: data.facebookReviewUrl,
+      
+      // 配色方案
+      primaryColor: data.primaryColor,
+      secondaryColor: data.secondaryColor,
+      accentColor: data.accentColor,
+      
+      // 展示模块
+      showContact: data.showContact,
+      showFollow: data.showFollow,
+      showReview: data.showReview,
+      
+      // 平台显示控制
+      followPlatforms: JSON.stringify(data.followPlatforms || []),
+      reviewPlatforms: JSON.stringify(data.reviewPlatforms || []),
+    }
+
     // 更新 Profile
     const profile = await prisma.profile.update({
       where: {
         userId: session.user.id
       },
-      data: {
-        // 基本信息
-        companyName: data.companyName,
-        logoUrl: data.logoUrl,
-        phone: data.phone,
-        address: data.address,
-        email: data.email,
-        
-        // 社交媒体
-        wechatId: data.wechatId,
-        instagram: data.instagram,
-        facebook: data.facebook,
-        tiktok: data.tiktok,
-        xiaohongshu: data.xiaohongshu,
-        yelp: data.yelp,
-        google: data.google,
-        
-        // 评价平台链接
-        googleReviewUrl: data.googleReviewUrl,
-        yelpReviewUrl: data.yelpReviewUrl,
-        facebookReviewUrl: data.facebookReviewUrl,
-        
-        // 配色方案
-        primaryColor: data.primaryColor,
-        secondaryColor: data.secondaryColor,
-        accentColor: data.accentColor,
-        
-        // 展示模块
-        showContact: data.showContact,
-        showFollow: data.showFollow,
-        showReview: data.showReview,
-      }
+      data: updateData
     })
 
     return NextResponse.json({

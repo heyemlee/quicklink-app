@@ -22,11 +22,26 @@ export async function GET(request, { params }) {
       )
     }
 
+    // 解析平台控制JSON字段
+    let followPlatforms = []
+    let reviewPlatforms = []
+    
+    try {
+      followPlatforms = JSON.parse(user.profile.followPlatforms || '[]')
+    } catch (e) {
+      followPlatforms = []
+    }
+    
+    try {
+      reviewPlatforms = JSON.parse(user.profile.reviewPlatforms || '[]')
+    } catch (e) {
+      reviewPlatforms = []
+    }
+
     // 只返回需要公开的信息
     return NextResponse.json({
       profile: {
         companyName: user.profile.companyName,
-        logoUrl: user.profile.logoUrl,
         phone: user.profile.phone,
         address: user.profile.address,
         email: user.profile.email,
@@ -54,6 +69,10 @@ export async function GET(request, { params }) {
         showContact: user.profile.showContact,
         showFollow: user.profile.showFollow,
         showReview: user.profile.showReview,
+        
+        // 平台显示控制
+        followPlatforms: followPlatforms,
+        reviewPlatforms: reviewPlatforms,
       }
     })
   } catch (error) {

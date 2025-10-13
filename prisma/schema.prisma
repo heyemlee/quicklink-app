@@ -29,7 +29,6 @@ model Profile {
   
   // 基本信息
   companyName   String   @default("我的公司")
-  logoUrl       String?
   phone         String?
   address       String?
   email         String?
@@ -57,6 +56,10 @@ model Profile {
   showContact     Boolean  @default(true)
   showFollow      Boolean  @default(true)
   showReview      Boolean  @default(true)
+  
+  // 平台显示控制 (JSON数组，存储要显示的平台ID)
+  followPlatforms   String   @default("[\"website\",\"tiktok\",\"instagram\",\"facebook\",\"wechat\",\"xiaohongshu\"]")
+  reviewPlatforms   String   @default("[\"xiaohongshu\",\"yelp\",\"googlemap\",\"instagram\"]")
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { followPlatforms, reviewPlatforms } from '@/app/config/platformsConfig'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -14,7 +16,6 @@ export default function DashboardPage() {
   const [formData, setFormData] = useState({
     // 基本信息
     companyName: '',
-    logoUrl: '',
     phone: '',
     address: '',
     email: '',
@@ -42,6 +43,10 @@ export default function DashboardPage() {
     showContact: true,
     showFollow: true,
     showReview: true,
+    
+    // 平台显示控制
+    followPlatforms: ["website","tiktok","instagram","facebook","wechat","xiaohongshu"],
+    reviewPlatforms: ["xiaohongshu","yelp","googlemap","instagram"],
   })
 
   useEffect(() => {
@@ -62,7 +67,15 @@ export default function DashboardPage() {
       const data = await response.json()
       
       if (response.ok) {
-        setFormData(data.profile)
+        const profile = data.profile
+        // 解析JSON字段
+        if (typeof profile.followPlatforms === 'string') {
+          profile.followPlatforms = JSON.parse(profile.followPlatforms)
+        }
+        if (typeof profile.reviewPlatforms === 'string') {
+          profile.reviewPlatforms = JSON.parse(profile.reviewPlatforms)
+        }
+        setFormData(profile)
       }
     } catch (error) {
       console.error('获取配置失败:', error)
@@ -77,6 +90,23 @@ export default function DashboardPage() {
       ...formData,
       [name]: type === 'checkbox' ? checked : value
     })
+  }
+
+  const togglePlatform = (platformId, platformType) => {
+    const key = platformType === 'follow' ? 'followPlatforms' : 'reviewPlatforms'
+    const currentPlatforms = formData[key] || []
+    
+    if (currentPlatforms.includes(platformId)) {
+      setFormData({
+        ...formData,
+        [key]: currentPlatforms.filter(id => id !== platformId)
+      })
+    } else {
+      setFormData({
+        ...formData,
+        [key]: [...currentPlatforms, platformId]
+      })
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -233,20 +263,6 @@ export default function DashboardPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Logo URL
-                  </label>
-                  <input
-                    type="url"
-                    name="logoUrl"
-                    value={formData.logoUrl || ''}
-                    onChange={handleChange}
-                    placeholder="https://example.com/logo.png"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     电话
                   </label>
                   <input
@@ -384,30 +400,138 @@ export default function DashboardPage() {
 
             {/* Display Settings Tab */}
             {activeTab === 'display' && (
-              <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">显示设置</h3>
-                <p className="text-sm text-gray-600 mb-4">选择在名片页面上显示哪些模块</p>
-                
-                {[
-                  { name: 'showContact', label: '显示联系信息', description: '显示保存联系人按钮和联系信息' },
-                  { name: 'showFollow', label: '显示关注模块', description: '显示社交媒体关注按钮' },
-                  { name: 'showReview', label: '显示评价模块', description: '显示撰写评价按钮' },
-                ].map(field => (
-                  <div key={field.name} className="flex items-start">
-                    <input
-                      type="checkbox"
-                      id={field.name}
-                      name={field.name}
-                      checked={formData[field.name]}
-                      onChange={handleChange}
-                      className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
-                    />
-                    <label htmlFor={field.name} className="ml-3">
-                      <div className="text-sm font-medium text-gray-700">{field.label}</div>
-                      <div className="text-xs text-gray-500">{field.description}</div>
-                    </label>
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">基本模块显示</h3>
+                  <p className="text-sm text-gray-600 mb-4">选择在名片页面上显示哪些基本模块</p>
+                  
+                  <div className="space-y-3">
+                    {[
+                      { name: 'showContact', label: '显示联系信息', description: '显示保存联系人按钮和联系信息' },
+                      { name: 'showFollow', label: '显示关注模块', description: '显示社交媒体关注按钮' },
+                      { name: 'showReview', label: '显示评价模块', description: '显示撰写评价按钮' },
+                    ].map(field => (
+                      <div key={field.name} className="flex items-start p-3 bg-gray-50 rounded-lg">
+                        <input
+                          type="checkbox"
+                          id={field.name}
+                          name={field.name}
+                          checked={formData[field.name]}
+                          onChange={handleChange}
+                          className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
+                        />
+                        <label htmlFor={field.name} className="ml-3">
+                          <div className="text-sm font-medium text-gray-700">{field.label}</div>
+                          <div className="text-xs text-gray-500">{field.description}</div>
+                        </label>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* 关注平台选择 */}
+                {formData.showFollow && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">关注模块 - 平台选择</h3>
+                    <p className="text-sm text-gray-600 mb-4">选择要在关注模块中显示的平台</p>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {followPlatforms.map((platform) => {
+                        const isSelected = formData.followPlatforms?.includes(platform.id)
+                        return (
+                          <button
+                            key={platform.id}
+                            type="button"
+                            onClick={() => togglePlatform(platform.id, 'follow')}
+                            className={`relative p-4 rounded-xl border-2 transition-all ${
+                              isSelected
+                                ? 'border-purple-600 bg-purple-50 shadow-md'
+                                : 'border-gray-200 bg-white hover:border-gray-300'
+                            }`}
+                          >
+                            {isSelected && (
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center">
+                                <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path d="M5 13l4 4L19 7"></path>
+                                </svg>
+                              </div>
+                            )}
+                            <div className="flex flex-col items-center gap-2">
+                              {platform.isImage ? (
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${platform.color}`}>
+                                  <div className="bg-white rounded-full p-1.5">
+                                    <Image 
+                                      src={platform.icon} 
+                                      alt={platform.name}
+                                      width={32}
+                                      height={32}
+                                      className="w-6 h-6 object-contain"
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-2xl">{platform.icon}</span>
+                              )}
+                              <span className="text-sm font-medium text-gray-700">{platform.name}</span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* 评价平台选择 */}
+                {formData.showReview && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">评价模块 - 平台选择</h3>
+                    <p className="text-sm text-gray-600 mb-4">选择要在评价模块中显示的平台</p>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {reviewPlatforms.map((platform) => {
+                        const isSelected = formData.reviewPlatforms?.includes(platform.id)
+                        return (
+                          <button
+                            key={platform.id}
+                            type="button"
+                            onClick={() => togglePlatform(platform.id, 'review')}
+                            className={`relative p-4 rounded-xl border-2 transition-all ${
+                              isSelected
+                                ? 'border-pink-600 bg-pink-50 shadow-md'
+                                : 'border-gray-200 bg-white hover:border-gray-300'
+                            }`}
+                          >
+                            {isSelected && (
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-pink-600 rounded-full flex items-center justify-center">
+                                <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path d="M5 13l4 4L19 7"></path>
+                                </svg>
+                              </div>
+                            )}
+                            <div className="flex flex-col items-center gap-2">
+                              {platform.isImage ? (
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${platform.color}`}>
+                                  <div className="bg-white rounded-full p-1.5">
+                                    <Image 
+                                      src={platform.icon} 
+                                      alt={platform.name}
+                                      width={32}
+                                      height={32}
+                                      className="w-6 h-6 object-contain"
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-2xl">{platform.icon}</span>
+                              )}
+                              <span className="text-sm font-medium text-gray-700">{platform.name}</span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

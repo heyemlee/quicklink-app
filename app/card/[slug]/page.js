@@ -12,6 +12,7 @@ import FollowSection from "@/app/components/FollowSection";
 import ReviewSection from "@/app/components/ReviewSection";
 import ReviewModal from "@/app/components/ReviewModal";
 import { WeChatToast, OfflineToast, OfflineIndicator } from "@/app/components/Toast";
+import { followPlatforms as allFollowPlatforms, reviewPlatforms as allReviewPlatforms } from "@/app/config/platformsConfig";
 
 export default function CardPage() {
   const params = useParams();
@@ -76,76 +77,25 @@ export default function CardPage() {
     phone: profile.phone,
     email: profile.email,
     address: profile.address,
-    logo: profile.logoUrl,
   } : null;
 
-  // Build follow platforms from profile
-  const followPlatforms = profile ? [
-    profile.wechatId && {
-      id: "wechat",
-      name: "WeChat",
-      icon: "/icons/wechat.png",
-      appScheme: "weixin://",
-      fallbackUrl: "https://weixin.qq.com",
-      badge: profile.wechatId,
-    },
-    profile.instagram && {
-      id: "instagram",
-      name: "Instagram",
-      icon: "/icons/instagram.png",
-      appScheme: profile.instagram.includes('://') ? profile.instagram : `instagram://user?username=${profile.instagram}`,
-      fallbackUrl: profile.instagram.includes('://') ? profile.instagram : `https://instagram.com/${profile.instagram}`,
-    },
-    profile.facebook && {
-      id: "facebook",
-      name: "Facebook",
-      icon: "/icons/facebook.png",
-      appScheme: profile.facebook,
-      fallbackUrl: profile.facebook,
-    },
-    profile.tiktok && {
-      id: "tiktok",
-      name: "TikTok",
-      icon: "/icons/tiktok.png",
-      appScheme: profile.tiktok,
-      fallbackUrl: profile.tiktok,
-    },
-    profile.xiaohongshu && {
-      id: "xiaohongshu",
-      name: "小红书",
-      icon: "/icons/xiaohongshu.png",
-      appScheme: profile.xiaohongshu,
-      fallbackUrl: profile.xiaohongshu,
-    },
-  ].filter(Boolean) : [];
+  // Build follow platforms based on profile settings
+  const followPlatforms = profile && profile.followPlatforms ? 
+    allFollowPlatforms
+      .filter(platform => profile.followPlatforms.includes(platform.id))
+      .map(platform => {
+        // 如果是微信，添加badge
+        if (platform.id === 'wechat' && profile.wechatId) {
+          return { ...platform, badge: profile.wechatId }
+        }
+        return platform
+      })
+    : [];
 
-  // Build review platforms from profile
-  const reviewPlatforms = profile ? [
-    profile.googleReviewUrl && {
-      id: "google",
-      name: "Google",
-      icon: "/icons/google.png",
-      appScheme: profile.googleReviewUrl,
-      fallbackUrl: profile.googleReviewUrl,
-      gradient: "from-blue-500 to-green-500",
-    },
-    profile.yelpReviewUrl && {
-      id: "yelp",
-      name: "Yelp",
-      icon: "/icons/yelp.png",
-      appScheme: profile.yelpReviewUrl,
-      fallbackUrl: profile.yelpReviewUrl,
-      gradient: "from-red-500 to-red-600",
-    },
-    profile.facebookReviewUrl && {
-      id: "facebook",
-      name: "Facebook",
-      icon: "/icons/facebook.png",
-      appScheme: profile.facebookReviewUrl,
-      fallbackUrl: profile.facebookReviewUrl,
-      gradient: "from-blue-600 to-blue-700",
-    },
-  ].filter(Boolean) : [];
+  // Build review platforms based on profile settings
+  const reviewPlatforms = profile && profile.reviewPlatforms ? 
+    allReviewPlatforms.filter(platform => profile.reviewPlatforms.includes(platform.id))
+    : [];
 
   // Handle review platform click
   const handlePlatformClick = async (platform) => {
@@ -317,7 +267,7 @@ END:VCARD`;
         )}
 
         {/* Header */}
-        <Header companyName={profile?.companyName} logoUrl={profile?.logoUrl} />
+        <Header companyName={profile?.companyName} />
 
         {/* Main Content */}
         <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-20">
