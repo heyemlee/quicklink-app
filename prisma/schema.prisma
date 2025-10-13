@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  slug          String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // 关联到客户配置
+  profile       Profile?
+}
+
+model Profile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // 基本信息
+  companyName   String   @default("我的公司")
+  logoUrl       String?
+  phone         String?
+  address       String?
+  email         String?
+  
+  // 社交媒体链接
+  wechatId      String?
+  instagram     String?
+  facebook      String?
+  tiktok        String?
+  xiaohongshu   String?
+  yelp          String?
+  google        String?
+  
+  // 评价平台链接
+  googleReviewUrl     String?
+  yelpReviewUrl       String?
+  facebookReviewUrl   String?
+  
+  // 配色方案
+  primaryColor    String   @default("#7c3aed")
+  secondaryColor  String   @default("#ec4899")
+  accentColor     String   @default("#3b82f6")
+  
+  // 展示模块控制
+  showContact     Boolean  @default(true)
+  showFollow      Boolean  @default(true)
+  showReview      Boolean  @default(true)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
+}

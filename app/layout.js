@@ -1,4 +1,5 @@
 import "./globals.css";
+import AuthProvider from "./providers/SessionProvider";
 
 export const metadata = {
   title: "KABi Design",
@@ -23,7 +24,11 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="theme-color" content="#7c3aed" />
       </head>
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }

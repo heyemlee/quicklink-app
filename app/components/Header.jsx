@@ -1,17 +1,30 @@
 import React from 'react';
 
-const Header = () => {
+const Header = ({ companyName, logoUrl }) => {
+  // Use default values if not provided
+  const displayName = companyName || "KABi";
+  const displaySubtitle = companyName && companyName !== "KABi" ? "" : "Kitchen and Bath Institute";
+  
   return (
     <header className="bg-white shadow-md sticky top-0 z-40 border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="text-center">
-          <div className="mb-4 sm:mb-5">
+          <div className="mb-4 sm:mb-5 flex flex-col items-center">
+            {logoUrl && (
+              <img 
+                src={logoUrl} 
+                alt={displayName}
+                className="h-16 sm:h-20 w-auto object-contain mb-3"
+              />
+            )}
             <h1 className="text-4xl sm:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight leading-none mb-1.5">
-              KABi
+              {displayName}
             </h1>
-            <p className="text-xs sm:text-sm font-semibold text-gray-600 tracking-wide uppercase">
-              Kitchen and Bath Institute
-            </p>
+            {displaySubtitle && (
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 tracking-wide uppercase">
+                {displaySubtitle}
+              </p>
+            )}
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-gray-700">
             <a href="tel:6692981888" className="flex items-center gap-2 hover:text-blue-600 transition-colors">

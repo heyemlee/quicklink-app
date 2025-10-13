@@ -1,290 +1,227 @@
-# Review & Follow Platform App
+# 🎴 数字名片管理系统
 
-A modern, mobile-first web application built with React and Next.js for collecting user reviews and growing social media following across multiple platforms.
+> 多租户 SaaS 平台，为每个客户提供独立的数字名片
 
-## 🚀 Quick Start
+[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-336791)](https://www.postgresql.org/)
 
-### Prerequisites
-- Node.js 16.x or higher
-- npm or yarn
+## ✨ 核心功能
 
-### Installation Steps
+- 🔐 **用户系统** - 独立账号注册登录
+- 🎨 **品牌定制** - Logo、配色、内容完全自定义
+- 🔗 **唯一链接** - 每个客户专属名片 URL
+- 📱 **移动优先** - 完美适配所有设备
+- 🤖 **AI 增强** - 智能生成评价内容
+- 📊 **后台管理** - 简单易用的管理界面
 
-1. **Clone or create the project:**
+## 🚀 快速开始
+
+### 前提条件
+
+- Node.js 16+
+- PostgreSQL 数据库
+- npm 或 yarn
+
+### 5分钟部署
+
 ```bash
-npx create-next-app@latest review-follow-app
-cd review-follow-app
-```
+# 1. 克隆项目
+git clone <your-repo-url>
+cd review_app
 
-2. **Install dependencies:**
-```bash
-npm install lucide-react
-```
+# 2. 安装依赖
+npm install
 
-3. **Copy all project files** into your project directory following the structure below.
+# 3. 配置环境变量
+cp .env.example .env
+# 编辑 .env，填入你的数据库连接和密钥
 
-4. **Create environment file:**
-```bash
-cp .env.local.example .env.local
-# Edit .env.local and add your API keys
-```
+# 4. 初始化数据库
+npm run db:migrate
 
-5. **Run development server:**
-```bash
+# 5. 创建测试数据（可选）
+npm run db:seed
+
+# 6. 启动应用
 npm run dev
 ```
 
-6. **Open browser:**
-Navigate to `http://localhost:3000`
+访问 http://localhost:3000 🎉
 
-## 📁 Complete File Structure
+### 环境变量配置
 
-```
-review-follow-app/
-├── app/
-│   ├── api/
-│   │   └── generate-review/
-│   │       └── route.js          # API endpoint for review generation
-│   ├── globals.css               # Global styles with Tailwind
-│   ├── layout.js                 # Root layout with metadata
-│   └── page.js                   # Main application component
-├── public/
-│   └── favicon.ico               # App icon
-├── .env.local.example            # Environment variables template
-├── .gitignore                    # Git ignore file
-├── next.config.js                # Next.js configuration
-├── package.json                  # Project dependencies
-├── postcss.config.js             # PostCSS configuration
-├── tailwind.config.js            # Tailwind CSS configuration
-└── README.md                     # This file
-```
-
-## 🎨 Features
-
-### 1. Write Reviews Section
-- ✅ Multi-platform support (Xiaohongshu, Yelp, Google Maps, Instagram)
-- ✅ AI-powered review generation
-- ✅ Modal occupies 2/3 of screen height
-- ✅ "Regenerate" button for new suggestions
-- ✅ One-click copy to clipboard
-- ✅ Smart app deep linking with web fallback
-- ✅ Auto-copy text when opening apps
-
-### 2. Follow Us Section
-- ✅ Direct app jump functionality
-- ✅ 5 platforms (Xiaohongshu, TikTok, Instagram, Facebook, WeChat)
-- ✅ Automatic fallback to web if app not installed
-- ✅ Clean, modern button design
-
-## 🔧 Configuration
-
-### Customizing Platform URLs
-
-Edit the platform configurations in `app/page.js`:
-
-```javascript
-// For review platforms
-const reviewPlatforms = [
-  {
-    id: 'xiaohongshu',
-    name: 'Xiaohongshu',
-    icon: '📕',
-    color: 'bg-red-500',
-    appScheme: 'xhsdiscover://',
-    fallbackUrl: 'https://www.xiaohongshu.com/YOUR_PROFILE'
-  },
-  // ... add more platforms
-];
-
-// For follow platforms
-const followPlatforms = [
-  {
-    id: 'xiaohongshu',
-    name: 'Xiaohongshu',
-    icon: '📕',
-    color: 'bg-red-500',
-    appScheme: 'xhsdiscover://user/YOUR_USER_ID',
-    fallbackUrl: 'https://www.xiaohongshu.com/user/profile/YOUR_USER_ID'
-  },
-  // ... add more platforms
-];
-```
-
-### Common App Schemes
-
-| Platform | App Scheme | Example |
-|----------|------------|---------|
-| Xiaohongshu | `xhsdiscover://` | `xhsdiscover://user/USER_ID` |
-| TikTok | `snssdk1233://` | `snssdk1233://user/profile/USER_ID` |
-| Instagram | `instagram://` | `instagram://user?username=HANDLE` |
-| Facebook | `fb://` | `fb://profile/PAGE_ID` |
-| WeChat | `weixin://` | `weixin://dl/profile/WECHAT_ID` |
-| Yelp | `yelp://` | `yelp://biz/BUSINESS_ID` |
-| Google Maps | `comgooglemaps://` | `comgooglemaps://?q=PLACE` |
-
-## 🤖 AI Integration
-
-### Using OpenAI
-
-1. Install OpenAI SDK:
-```bash
-npm install openai
-```
-
-2. Update `app/api/generate-review/route.js`:
-```javascript
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function POST(request) {
-  const { platform } = await request.json();
-  
-  const completion = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: "Generate positive, authentic reviews in English with emojis."
-      },
-      {
-        role: "user",
-        content: `Generate a review for ${platform}`
-      }
-    ],
-  });
-  
-  return NextResponse.json({ 
-    review: completion.choices[0].message.content 
-  });
-}
-```
-
-### Using Anthropic Claude
-
-1. Install Anthropic SDK:
-```bash
-npm install @anthropic-ai/sdk
-```
-
-2. Update the API route similarly with Claude integration.
-
-## 🌐 Deploy to Vercel
-
-### Method 1: Vercel CLI
+在 `.env` 文件中配置：
 
 ```bash
-# Install Vercel CLI
+# 数据库（必需）
+DATABASE_URL="postgresql://user:pass@localhost:5432/review_app"
+
+# 认证（必需）
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="生成密钥: openssl rand -base64 32"
+
+# AI功能（可选）
+OPENAI_API_KEY="sk-..."
+```
+
+> 📘 详细的环境变量配置指南请查看 [ENV_SETUP.md](./ENV_SETUP.md)
+
+## 📖 使用说明
+
+### 1. 注册账号
+
+访问 `/login` 页面，注册新账号
+
+### 2. 配置信息
+
+登录后进入 `/dashboard`，设置：
+
+- 基本信息（公司名、Logo、联系方式）
+- 社交媒体链接
+- 评价平台链接
+- 品牌配色方案
+
+### 3. 分享名片
+
+复制你的专属链接（如 `/card/john-abc123`），分享给客户！
+
+## 📱 功能展示
+
+### 后台管理
+
+- 5个配置模块（基本信息、社交媒体、评价链接、样式、显示设置）
+- 实时保存，即改即生效
+- 一键预览和分享
+
+### 动态名片
+
+- 自动应用品牌配色
+- 一键保存联系人
+- 智能跳转社交应用
+- AI 生成评价内容
+
+## 🛠️ 开发命令
+
+```bash
+# 开发
+npm run dev              # 启动开发服务器
+
+# 数据库
+npm run db:migrate       # 运行数据库迁移
+npm run db:studio        # 打开数据库管理界面
+npm run db:seed          # 创建测试数据
+
+# 生产
+npm run build            # 构建生产版本
+npm run start            # 启动生产服务器
+```
+
+## 📁 项目结构
+
+```
+review_app/
+├── app/                    # Next.js 应用
+│   ├── api/               # API 接口
+│   ├── dashboard/         # 后台管理
+│   ├── card/[slug]/       # 动态名片
+│   ├── login/             # 登录页面
+│   └── components/        # UI 组件
+├── prisma/                # 数据库
+│   └── schema.prisma      # 数据模型
+├── lib/                   # 核心库
+└── public/                # 静态资源
+```
+
+## 🚢 部署到生产
+
+详细部署指南请查看 [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md)
+
+### 快速部署到 Vercel
+
+```bash
+# 1. 安装 Vercel CLI
 npm install -g vercel
 
-# Login
-vercel login
-
-# Deploy
+# 2. 部署
 vercel
 
-# Deploy to production
-vercel --prod
+# 3. 配置环境变量（在 Vercel Dashboard）
+# 4. 运行数据库迁移
+# 5. 完成！
 ```
 
-### Method 2: GitHub Integration
+### 推荐服务
 
-1. Push code to GitHub
-2. Go to [vercel.com](https://vercel.com)
-3. Click "New Project"
-4. Import your GitHub repository
-5. Configure environment variables in Vercel dashboard
-6. Deploy!
+| 服务类型 | 推荐平台  | 免费额度 |
+| -------- | --------- | -------- |
+| 应用托管 | Vercel    | ✅ 免费  |
+| 数据库   | Supabase  | ✅ 500MB |
+| 域名     | Namecheap | 💰 付费  |
 
-### Environment Variables in Vercel
+## 📚 文档导航
 
-Add these in **Settings → Environment Variables**:
-- `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
-- `NEXT_PUBLIC_APP_URL`
+- 📖 **[文档索引](./DOCS_INDEX.md)** - 文档结构说明
+- 📕 **[完整项目文档](./PROJECT_DOCUMENTATION.md)** - 技术架构、API接口、开发指南
+- 📗 **[生产部署指南](./PRODUCTION_DEPLOYMENT.md)** - 详细的部署步骤和配置
 
-## 📱 Testing
+## 🎯 技术栈
 
-### Local Mobile Testing
+- **前端**: Next.js 14, React 18, Tailwind CSS
+- **后端**: Next.js API Routes, NextAuth.js
+- **数据库**: PostgreSQL, Prisma ORM
+- **AI**: OpenAI GPT-3.5
 
-```bash
-# Start dev server on network
-npm run dev -- --host
+## 🔒 安全特性
 
-# Find your local IP
-# Mac/Linux: ifconfig | grep inet
-# Windows: ipconfig
+- ✅ 密码 bcrypt 加密
+- ✅ JWT 会话管理
+- ✅ SQL 注入防护
+- ✅ XSS 攻击防护
+- ✅ 环境变量隔离
 
-# Access on mobile: http://YOUR_IP:3000
-```
+## 🌟 亮点特性
 
-### Testing App Deep Links
+### 多租户架构
 
-- **iOS**: Test on actual devices (simulator doesn't support all schemes)
-- **Android**: Use `adb` to test deep links
-- **Web fallback**: Always works as backup
+每个注册用户都是独立的租户，拥有完全独立的配置空间
 
-## 🎨 CSS Files Explained
+### AI 驱动
 
-### globals.css
-- Includes Tailwind directives
-- Custom scrollbar styles
-- Modal animations (fadeIn, slideUp)
-- Base typography and spacing
-- Smooth transitions
+集成 OpenAI，智能生成个性化评价内容
 
-### Tailwind Configuration
-- Custom animations
-- Extended theme
-- Content paths for purging
-- Plugin configurations
+### 移动优先
 
-## 🐛 Troubleshooting
+完美的移动端体验，支持触觉反馈和应用深链接
 
-### Modal not showing
-- Check React state management
-- Verify z-index values
-- Check browser console for errors
+### 品牌定制
 
-### App deep links not working
-- Ensure testing on real devices
-- Verify app is installed
-- Check app scheme syntax
-- Fallback should always work
+Logo、配色、内容完全自定义，打造独特的品牌形象
 
-### CSS not loading
-- Run `npm run dev` to restart
-- Check Tailwind config paths
-- Verify PostCSS is configured
+## 💡 使用案例
 
-### API calls failing
-- Check API route path (`/api/generate-review`)
-- Verify request format
-- Check environment variables
-- Look at browser network tab
+- **SaaS 服务** - 为多个客户提供名片托管
+- **企业工具** - 员工数字名片管理系统
+- **代理商** - 为客户提供品牌展示页面
+- **个人名片** - 专业的个人品牌展示
 
-## 📊 Performance Tips
+## 🤝 贡献
 
-1. **Image Optimization**: Use Next.js Image component
-2. **Code Splitting**: Automatic with Next.js
-3. **Caching**: Configure in `next.config.js`
-4. **Analytics**: Add Vercel Analytics
+欢迎提交 Issue 和 Pull Request！
 
-## 🔒 Security Best Practices
+## 📄 许可证
 
-1. Never expose API keys in client code
-2. Use environment variables
-3. Implement rate limiting
-4. Validate all inputs
-5. Set up CORS properly
-6. Use HTTPS in production
+MIT License
 
-## 📝 License
+## 📞 支持
 
-MIT License - Free to use for personal and commercial projects.
+- 📖 查看 [完整文档](./PROJECT_DOCUMENTATION.md)
+- 🚀 查看 [部署指南](./PRODUCTION_DEPLOYMENT.md)
+- 💬 提交 Issue
 
 ---
 
-**Built with ❤️ using React, Next.js, Tailwind CSS**
+**开发**: 2024年  
+**版本**: 1.0.0  
+**状态**: ✅ 生产就绪
