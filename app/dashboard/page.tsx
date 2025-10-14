@@ -132,7 +132,7 @@ export default function DashboardPage() {
       
       if (response.ok) {
         const profile = data.profile
-        // 解析JSON字段
+        // Parse JSON fields
         if (typeof profile.followPlatforms === 'string') {
           profile.followPlatforms = JSON.parse(profile.followPlatforms)
         }
@@ -142,7 +142,7 @@ export default function DashboardPage() {
         setFormData(profile)
       }
     } catch (error) {
-      console.error('获取配置失败:', error)
+      console.error('Failed to fetch profile:', error)
     } finally {
       setLoading(false)
     }
@@ -188,16 +188,16 @@ export default function DashboardPage() {
       const data = await response.json()
 
       if (response.ok) {
-        setMessage('保存成功！')
+        setMessage('Saved successfully!')
         setModalType('success')
         setShowModal(true)
       } else {
-        setMessage('保存失败：' + data.error)
+        setMessage('Save failed: ' + data.error)
         setModalType('error')
         setShowModal(true)
       }
     } catch (error) {
-      setMessage('保存失败，请稍后重试')
+      setMessage('Save failed, please try again later')
       setModalType('error')
       setShowModal(true)
     } finally {
@@ -210,7 +210,7 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">加载中...</p>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     )
@@ -229,9 +229,9 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">后台管理</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
               <p className="text-sm text-gray-600 mt-1">
-                欢迎，{session.user.email}
+                Welcome, {session.user.email}
               </p>
             </div>
             <div className="flex gap-3">
@@ -241,13 +241,13 @@ export default function DashboardPage() {
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                预览名片
+                Preview Card
               </a>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
                 className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
-                退出登录
+                Logout
               </button>
             </div>
           </div>
@@ -257,7 +257,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Card URL Display */}
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-lg p-6 mb-8 text-white">
-          <h2 className="text-lg font-semibold mb-2">您的名片链接</h2>
+          <h2 className="text-lg font-semibold mb-2">Your Card Link</h2>
           <div className="flex items-center gap-3">
             <input
               type="text"
@@ -268,13 +268,13 @@ export default function DashboardPage() {
             <button
               onClick={() => {
                 navigator.clipboard.writeText(cardUrl)
-                setMessage('链接已复制！')
+                setMessage('Link copied!')
                 setModalType('success')
                 setShowModal(true)
               }}
               className="px-4 py-2 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-colors font-medium"
             >
-              复制链接
+              Copy Link
             </button>
           </div>
         </div>
@@ -316,7 +316,7 @@ export default function DashboardPage() {
                       <h3 className={`text-lg font-semibold mb-2 ${
                         modalType === 'success' ? 'text-green-900' : 'text-red-900'
                       }`}>
-                        {modalType === 'success' ? '操作成功' : '操作失败'}
+                        {modalType === 'success' ? 'Success' : 'Failed'}
                       </h3>
                       <p className="text-sm text-gray-600">
                         {message}
@@ -336,7 +336,7 @@ export default function DashboardPage() {
                         : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
                     }`}
                   >
-                    确定
+                    OK
                   </button>
                 </div>
               </div>
@@ -349,9 +349,9 @@ export default function DashboardPage() {
           <div className="border-b">
             <div className="flex overflow-x-auto">
               {[
-                { id: 'basic', label: '网页信息' },
-                { id: 'display', label: '显示设置' },
-                { id: 'style', label: '主题风格' },
+                { id: 'basic', label: 'Basic Info' },
+                { id: 'display', label: 'Display Settings' },
+                { id: 'style', label: 'Theme Style' },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -372,14 +372,14 @@ export default function DashboardPage() {
             {/* Basic Info Tab */}
             {activeTab === 'basic' && (
               <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">网页信息</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  这些信息将显示在主页上
+                  This information will be displayed on your homepage
                 </p>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    公司名称
+                    Company Name
                   </label>
                   <input
                     type="text"
@@ -392,7 +392,7 @@ export default function DashboardPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    电话
+                    Phone
                   </label>
                   <input
                     type="tel"
@@ -406,7 +406,7 @@ export default function DashboardPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    地址
+                    Address
                   </label>
                   <input
                     type="text"
@@ -424,13 +424,13 @@ export default function DashboardPage() {
             {activeTab === 'style' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">主题风格</h3>
-                  <p className="text-sm text-gray-600 mb-4">选择一种主题风格应用到您的名片</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Theme Style</h3>
+                  <p className="text-sm text-gray-600 mb-4">Select a theme style to apply to your card</p>
                 </div>
 
-                {/* 主题风格选择 */}
+                {/* Theme style selection */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* 经典风格 */}
+                  {/* Classic style */}
                   <button
                     type="button"
                     onClick={() => {
@@ -450,8 +450,8 @@ export default function DashboardPage() {
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 via-pink-500 to-blue-500 shadow-lg"></div>
                       <div className="text-center">
-                        <div className="font-bold text-lg text-gray-900 mb-1">经典风格</div>
-                        <div className="text-sm text-gray-500 mb-3">紫粉渐变 · 活泼时尚</div>
+                        <div className="font-bold text-lg text-gray-900 mb-1">Classic Style</div>
+                        <div className="text-sm text-gray-500 mb-3">Purple-Pink Gradient · Vibrant & Stylish</div>
                       </div>
                       <div className="flex gap-2 w-full">
                         <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#7c3aed' }}></div>
@@ -463,13 +463,13 @@ export default function DashboardPage() {
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
-                          当前主题
+                          Current Theme
                         </div>
                       )}
                     </div>
                   </button>
 
-                  {/* 简约蓝调 */}
+                  {/* Simple Blue */}
                   <button
                     type="button"
                     onClick={() => {
@@ -489,8 +489,8 @@ export default function DashboardPage() {
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-20 h-20 rounded-full bg-gradient-to-br from-sky-500 via-cyan-500 to-blue-500 shadow-lg"></div>
                       <div className="text-center">
-                        <div className="font-bold text-lg text-gray-900 mb-1">简约蓝调</div>
-                        <div className="text-sm text-gray-500 mb-3">清新专业 · 商务风格</div>
+                        <div className="font-bold text-lg text-gray-900 mb-1">Simple Blue</div>
+                        <div className="text-sm text-gray-500 mb-3">Fresh & Professional · Business Style</div>
                       </div>
                       <div className="flex gap-2 w-full">
                         <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#0ea5e9' }}></div>
@@ -502,13 +502,13 @@ export default function DashboardPage() {
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
-                          当前主题
+                          Current Theme
                         </div>
                       )}
                     </div>
                   </button>
 
-                  {/* 优雅深色 */}
+                  {/* Elegant Dark */}
                   <button
                     type="button"
                     onClick={() => {
@@ -528,8 +528,8 @@ export default function DashboardPage() {
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-20 h-20 rounded-full bg-gradient-to-br from-slate-800 via-slate-600 to-slate-500 shadow-lg"></div>
                       <div className="text-center">
-                        <div className="font-bold text-lg text-gray-900 mb-1">优雅深色</div>
-                        <div className="text-sm text-gray-500 mb-3">沉稳大气 · 高端奢华</div>
+                        <div className="font-bold text-lg text-gray-900 mb-1">Elegant Dark</div>
+                        <div className="text-sm text-gray-500 mb-3">Sophisticated · Premium Luxury</div>
                       </div>
                       <div className="flex gap-2 w-full">
                         <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#1e293b' }}></div>
@@ -541,7 +541,7 @@ export default function DashboardPage() {
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
-                          当前主题
+                          Current Theme
                         </div>
                       )}
                     </div>
@@ -554,11 +554,11 @@ export default function DashboardPage() {
             {activeTab === 'display' && (
               <div className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">模块显示设置</h3>
-                  <p className="text-sm text-gray-600 mb-4">选择要在名片页面上显示的模块，并配置相应的信息</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Module Display Settings</h3>
+                  <p className="text-sm text-gray-600 mb-4">Select which modules to display on your card page and configure the information</p>
                 </div>
 
-                {/* 联系信息模块 */}
+                {/* Contact Info Module */}
                 <div className="border rounded-lg p-5 bg-gray-50">
                   <div className="flex items-start mb-4">
                     <input
@@ -570,8 +570,8 @@ export default function DashboardPage() {
                       className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
                     />
                     <label htmlFor="showContact" className="ml-3">
-                      <div className="text-base font-semibold text-gray-900">显示联系信息</div>
-                      <div className="text-sm text-gray-600">显示保存联系人按钮和名片配置</div>
+                      <div className="text-base font-semibold text-gray-900">Show Contact Information</div>
+                      <div className="text-sm text-gray-600">Display save contact button and card configuration</div>
                     </label>
                   </div>
 
@@ -580,15 +580,15 @@ export default function DashboardPage() {
                       <div className="bg-white rounded-lg p-4 border border-green-100">
                         <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                           <span className="w-2 h-2 bg-green-600 rounded-full"></span>
-                          名片信息配置
+                          Contact Card Configuration
                         </h4>
                         <p className="text-xs text-gray-600 mb-4">
-                          这些信息将用于生成联系人名片(vCard)文件
+                          This information will be used to generate vCard file
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              名称
+                              Name
                             </label>
                             <input
                               type="text"
@@ -602,7 +602,7 @@ export default function DashboardPage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              电话
+                              Phone
                             </label>
                             <input
                               type="tel"
@@ -616,7 +616,7 @@ export default function DashboardPage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              邮箱
+                              Email
                             </label>
                             <input
                               type="email"
@@ -630,7 +630,7 @@ export default function DashboardPage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              地址
+                              Address
                             </label>
                             <input
                               type="text"
@@ -644,7 +644,7 @@ export default function DashboardPage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              网站
+                              Website
                             </label>
                             <input
                               type="url"
@@ -658,7 +658,7 @@ export default function DashboardPage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              公司
+                              Company
                             </label>
                             <input
                               type="text"
@@ -675,7 +675,7 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                {/* 关注模块 */}
+                {/* Follow Module */}
                 <div className="border rounded-lg p-5 bg-gray-50">
                   <div className="flex items-start mb-4">
                     <input
@@ -687,16 +687,16 @@ export default function DashboardPage() {
                       className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
                     />
                     <label htmlFor="showFollow" className="ml-3">
-                      <div className="text-base font-semibold text-gray-900">显示关注模块</div>
-                      <div className="text-sm text-gray-600">显示社交媒体关注按钮</div>
+                      <div className="text-base font-semibold text-gray-900">Show Follow Module</div>
+                      <div className="text-sm text-gray-600">Display social media follow buttons</div>
                     </label>
                   </div>
 
                   {formData.showFollow && (
                     <div className="mt-6 space-y-6 pl-8 border-l-2 border-purple-200">
-                      {/* 平台选择 */}
+                      {/* Platform selection */}
                       <div>
-                        <h4 className="text-sm font-semibold text-gray-900 mb-3">选择要显示的平台</h4>
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Select Platforms to Display</h4>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                           {followPlatforms.map((platform: PlatformConfig) => {
                             const isSelected = formData.followPlatforms?.includes(platform.id)
@@ -742,30 +742,30 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {/* Website平台配置 - 仅在选中时显示 */}
+                      {/* Website platform configuration - shown only when selected */}
                       {formData.followPlatforms?.includes('website') && (
                         <div className="bg-white rounded-lg p-4 border border-purple-100">
                           <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                             <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
-                            Website平台配置
+                            Website Platform Configuration
                           </h4>
                           <div className="space-y-3">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Website名称
+                                Website Name
                               </label>
                               <input
                                 type="text"
                                 name="websiteName"
                                 value={formData.websiteName || ''}
                                 onChange={handleChange}
-                                placeholder="例如：KABI、我的网站等"
+                                placeholder="e.g.: KABI, My Website, etc."
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
                               />
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Website链接
+                                Website URL
                               </label>
                               <input
                                 type="url"
@@ -780,14 +780,14 @@ export default function DashboardPage() {
                         </div>
                       )}
 
-                      {/* 社交媒体链接配置 - 仅显示选中的平台 */}
+                      {/* Social media links configuration - only show selected platforms */}
                       {(() => {
                         const socialMediaFields = [
-                          { id: 'wechat', name: 'wechatId' as keyof FormData, label: '微信 ID', placeholder: 'your-wechat-id' },
+                          { id: 'wechat', name: 'wechatId' as keyof FormData, label: 'WeChat ID', placeholder: 'your-wechat-id' },
                           { id: 'instagram', name: 'instagram' as keyof FormData, label: 'Instagram', placeholder: 'https://instagram.com/yourprofile' },
                           { id: 'facebook', name: 'facebook' as keyof FormData, label: 'Facebook', placeholder: 'https://facebook.com/yourpage' },
                           { id: 'tiktok', name: 'tiktok' as keyof FormData, label: 'TikTok', placeholder: 'https://tiktok.com/@yourprofile' },
-                          { id: 'xiaohongshu', name: 'xiaohongshu' as keyof FormData, label: '小红书', placeholder: 'https://xiaohongshu.com/user/...' },
+                          { id: 'xiaohongshu', name: 'xiaohongshu' as keyof FormData, label: 'Xiaohongshu', placeholder: 'https://xiaohongshu.com/user/...' },
                           { id: 'yelp', name: 'yelp' as keyof FormData, label: 'Yelp', placeholder: 'https://yelp.com/biz/...' },
                           { id: 'google', name: 'google' as keyof FormData, label: 'Google', placeholder: 'https://g.page/...' },
                         ].filter(field => formData.followPlatforms?.includes(field.id));
@@ -798,7 +798,7 @@ export default function DashboardPage() {
                           <div className="bg-white rounded-lg p-4 border border-purple-100">
                             <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                               <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
-                              社交媒体链接配置
+                              Social Media Links Configuration
                             </h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {socialMediaFields.map(field => (
@@ -824,7 +824,7 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                {/* 评价模块 */}
+                {/* Review Module */}
                 <div className="border rounded-lg p-5 bg-gray-50">
                   <div className="flex items-start mb-4">
                     <input
@@ -836,16 +836,16 @@ export default function DashboardPage() {
                       className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
                     />
                     <label htmlFor="showReview" className="ml-3">
-                      <div className="text-base font-semibold text-gray-900">显示评价模块</div>
-                      <div className="text-sm text-gray-600">显示撰写评价按钮</div>
+                      <div className="text-base font-semibold text-gray-900">Show Review Module</div>
+                      <div className="text-sm text-gray-600">Display write review buttons</div>
                     </label>
                   </div>
 
                   {formData.showReview && (
                     <div className="mt-6 space-y-6 pl-8 border-l-2 border-pink-200">
-                      {/* 平台选择 */}
+                      {/* Platform selection */}
                       <div>
-                        <h4 className="text-sm font-semibold text-gray-900 mb-3">选择要显示的平台</h4>
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Select Platforms to Display</h4>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                           {reviewPlatforms.map((platform: PlatformConfig) => {
                             const isSelected = formData.reviewPlatforms?.includes(platform.id)
@@ -891,14 +891,14 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {/* 评价平台链接配置 - 仅显示选中的平台 */}
+                      {/* Review platform links configuration - only show selected platforms */}
                       {(() => {
                         const reviewLinkFields = [
-                          { id: 'googlemap', name: 'googleReviewUrl' as keyof FormData, label: 'Google 评价链接', placeholder: 'https://g.page/...' },
-                          { id: 'yelp', name: 'yelpReviewUrl' as keyof FormData, label: 'Yelp 评价链接', placeholder: 'https://yelp.com/writeareview/biz/...' },
-                          { id: 'facebook', name: 'facebookReviewUrl' as keyof FormData, label: 'Facebook 评价链接', placeholder: 'https://facebook.com/...' },
-                          { id: 'xiaohongshu', name: 'xiaohongshuReviewUrl' as keyof FormData, label: '小红书评价链接', placeholder: 'https://xiaohongshu.com/...' },
-                          { id: 'instagram', name: 'instagramReviewUrl' as keyof FormData, label: 'Instagram 评价链接', placeholder: 'https://instagram.com/...' },
+                          { id: 'googlemap', name: 'googleReviewUrl' as keyof FormData, label: 'Google Review Link', placeholder: 'https://g.page/...' },
+                          { id: 'yelp', name: 'yelpReviewUrl' as keyof FormData, label: 'Yelp Review Link', placeholder: 'https://yelp.com/writeareview/biz/...' },
+                          { id: 'facebook', name: 'facebookReviewUrl' as keyof FormData, label: 'Facebook Review Link', placeholder: 'https://facebook.com/...' },
+                          { id: 'xiaohongshu', name: 'xiaohongshuReviewUrl' as keyof FormData, label: 'Xiaohongshu Review Link', placeholder: 'https://xiaohongshu.com/...' },
+                          { id: 'instagram', name: 'instagramReviewUrl' as keyof FormData, label: 'Instagram Review Link', placeholder: 'https://instagram.com/...' },
                         ].filter(field => formData.reviewPlatforms?.includes(field.id));
                         
                         if (reviewLinkFields.length === 0) return null;
@@ -907,7 +907,7 @@ export default function DashboardPage() {
                           <div className="bg-white rounded-lg p-4 border border-pink-100">
                             <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                               <span className="w-2 h-2 bg-pink-600 rounded-full"></span>
-                              评价平台链接配置
+                              Review Platform Links Configuration
                             </h4>
                             <div className="space-y-3">
                               {reviewLinkFields.map(field => (
@@ -942,7 +942,7 @@ export default function DashboardPage() {
                 disabled={saving}
                 className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {saving ? '保存中...' : '保存更改'}
+                {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </form>

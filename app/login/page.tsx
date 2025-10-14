@@ -2,11 +2,13 @@
 import { useState, FormEvent, ChangeEvent } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface FormData {
   email: string;
   password: string;
   inviteCode: string;
+  verificationCode: string;
 }
 
 export default function LoginPage() {
@@ -16,18 +18,73 @@ export default function LoginPage() {
     email: '',
     password: '',
     inviteCode: '',
+    verificationCode: '',
   })
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
+  const [sendingCode, setSendingCode] = useState<boolean>(false)
+  const [countdown, setCountdown] = useState<number>(0)
+  const [successMessage, setSuccessMessage] = useState<string>('')
+
+  // Send verification code
+  const handleSendVerificationCode = async () => {
+    if (!formData.email) {
+      setError('Please enter your email address first')
+      return
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address')
+      return
+    }
+
+    setSendingCode(true)
+    setError('')
+    setSuccessMessage('')
+
+    try {
+      const response = await fetch('/api/auth/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to send verification code')
+      } else {
+        setSuccessMessage('Verification code has been sent to your email')
+        // Start 60 second countdown
+        setCountdown(60)
+        const timer = setInterval(() => {
+          setCountdown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer)
+              return 0
+            }
+            return prev - 1
+          })
+        }, 1000)
+      }
+    } catch (err) {
+      setError('Failed to send verification code, please try again later')
+    } finally {
+      setSendingCode(false)
+    }
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
+    setSuccessMessage('')
     setLoading(true)
 
     try {
       if (isLogin) {
-        // 登录
+        // Login
         const result = await signIn('credentials', {
           redirect: false,
           email: formData.email,
@@ -40,19 +97,24 @@ export default function LoginPage() {
           router.push('/dashboard')
         }
       } else {
-        // 注册
+        // Register - with verification code
         const response = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            inviteCode: formData.inviteCode,
+            verificationCode: formData.verificationCode,
+          }),
         })
 
         const data = await response.json()
 
         if (!response.ok) {
-          setError(data.error || '注册失败')
+          setError(data.error || 'Registration failed')
         } else {
-          // 注册成功后自动登录
+          // Auto login after successful registration
           const result = await signIn('credentials', {
             redirect: false,
             email: formData.email,
@@ -60,14 +122,14 @@ export default function LoginPage() {
           })
 
           if (result?.error) {
-            setError('注册成功，但登录失败：' + result.error)
+            setError('Registration successful, but login failed: ' + result.error)
           } else {
             router.push('/dashboard')
           }
         }
       }
     } catch (err) {
-      setError('发生错误，请稍后重试')
+      setError('An error occurred, please try again later')
     } finally {
       setLoading(false)
     }
@@ -90,7 +152,7 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">后台管理系统</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
         </div>
 
         {/* Login/Register Form */}
@@ -101,6 +163,8 @@ export default function LoginPage() {
               onClick={() => {
                 setIsLogin(true)
                 setError('')
+                setSuccessMessage('')
+                setCountdown(0)
               }}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                 isLogin
@@ -108,13 +172,15 @@ export default function LoginPage() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              登录
+              Login
             </button>
             <button
               type="button"
               onClick={() => {
                 setIsLogin(false)
                 setError('')
+                setSuccessMessage('')
+                setCountdown(0)
               }}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                 !isLogin
@@ -122,14 +188,14 @@ export default function LoginPage() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              注册
+              Register
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                邮箱地址
+                Email Address
               </label>
               <input
                 id="email"
@@ -143,10 +209,49 @@ export default function LoginPage() {
               />
             </div>
 
+            {!isLogin && (
+              <div>
+                <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Verification Code
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="verificationCode"
+                    name="verificationCode"
+                    type="text"
+                    required
+                    value={formData.verificationCode}
+                    onChange={handleChange}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
+                    placeholder="Enter 6-digit code"
+                    maxLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSendVerificationCode}
+                    disabled={sendingCode || countdown > 0}
+                    className="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap text-sm font-medium"
+                  >
+                    {sendingCode ? 'Sending...' : countdown > 0 ? `Retry in ${countdown}s` : 'Send Code'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                密码
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                {isLogin && (
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+                  >
+                    Forgot Password?
+                  </Link>
+                )}
+              </div>
               <input
                 id="password"
                 name="password"
@@ -155,14 +260,14 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                placeholder={isLogin ? "输入密码" : "至少6个字符"}
+                placeholder={isLogin ? "Enter password" : "At least 6 characters"}
               />
             </div>
 
             {!isLogin && (
               <div>
                 <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700 mb-2">
-                  邀请码
+                  Invite Code
                 </label>
                 <input
                   id="inviteCode"
@@ -172,7 +277,7 @@ export default function LoginPage() {
                   value={formData.inviteCode}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-                  placeholder="请输入邀请码"
+                  placeholder="Enter invite code"
                 />
               </div>
             )}
@@ -183,42 +288,52 @@ export default function LoginPage() {
               </div>
             )}
 
+            {successMessage && (
+              <div className="p-3 bg-green-50 border border-green-200 text-green-600 rounded-lg text-sm">
+                {successMessage}
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? '处理中...' : isLogin ? '登录' : '注册'}
+              {loading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
             </button>
           </form>
 
           <div className="mt-6 text-center text-sm text-gray-600">
             {isLogin ? (
               <p>
-                还没有账号？{' '}
+                Don&apos;t have an account?{' '}
                 <button
                   type="button"
                   onClick={() => {
                     setIsLogin(false)
                     setError('')
+                    setSuccessMessage('')
+                    setCountdown(0)
                   }}
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
-                  立即注册
+                  Sign up now
                 </button>
               </p>
             ) : (
               <p>
-                已有账号？{' '}
+                Already have an account?{' '}
                 <button
                   type="button"
                   onClick={() => {
                     setIsLogin(true)
                     setError('')
+                    setSuccessMessage('')
+                    setCountdown(0)
                   }}
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
-                  立即登录
+                  Login now
                 </button>
               </p>
             )}
@@ -231,7 +346,7 @@ export default function LoginPage() {
             onClick={() => router.push('/')}
             className="text-white hover:text-white/80 text-sm font-medium transition-colors"
           >
-            ← 返回首页
+            ← Back to Home
           </button>
         </div>
       </div>

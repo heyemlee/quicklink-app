@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { hashPassword, generateSlug } from '@/lib/auth'
+import { validateEmail, validatePassword } from '@/lib/validation'
 
 export async function POST(request: Request) {
   try {
-    const { email, password, inviteCode } = await request.json()
+    const { email, password, inviteCode, verificationCode } = await request.json()
 
     // 验证邀请码
     const validInviteCode = process.env.REGISTRATION_INVITE_CODE
@@ -15,55 +16,121 @@ export async function POST(request: Request) {
       )
     }
 
-    // 验证输入
-    if (!email || !email.includes('@')) {
+    // 验证邮箱
+    if (!validateEmail(email)) {
       return NextResponse.json(
         { error: '请输入有效的邮箱地址' },
         { status: 422 }
       )
     }
 
-    if (!password || password.trim().length < 6) {
+    // 验证密码强度
+    const passwordValidation = validatePassword(password)
+    if (!passwordValidation.isValid) {
       return NextResponse.json(
-        { error: '密码至少需要6个字符' },
+        { 
+          error: '密码不符合要求',
+          details: passwordValidation.errors 
+        },
         { status: 422 }
       )
     }
 
     // 检查用户是否已存在
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
+      include: {
+        profile: true
+      }
     })
 
-    if (existingUser) {
+    if (existingUser && existingUser.emailVerified) {
       return NextResponse.json(
         { error: '该邮箱已被注册' },
         { status: 422 }
       )
     }
 
-    // 创建新用户
+    // 验证码是必须的
+    if (!verificationCode) {
+      return NextResponse.json(
+        { error: '请输入验证码' },
+        { status: 422 }
+      );
+    }
+
+    // 验证用户必须存在（通过发送验证码创建）
+    if (!existingUser) {
+      return NextResponse.json(
+        { error: '请先发送验证码' },
+        { status: 422 }
+      );
+    }
+
+    // 验证码验证
+    const validToken = await prisma.verificationToken.findFirst({
+      where: {
+        userId: existingUser.id,
+        token: verificationCode,
+        type: 'email_verification',
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!validToken) {
+      return NextResponse.json(
+        { error: '验证码无效或已过期' },
+        { status: 422 }
+      );
+    }
+
+    // 删除已使用的验证码
+    await prisma.verificationToken.delete({
+      where: { id: validToken.id },
+    });
+
+    // 更新用户信息
     const hashedPassword = await hashPassword(password)
     const slug = generateSlug(email)
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        slug,
-        profile: {
-          create: {
-            companyName: '我的公司',
-            showContact: true,
-            showFollow: true,
-            showReview: true,
-          }
+    let user;
+    if (existingUser.profile) {
+      // 更新现有用户（临时用户）
+      user = await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          password: hashedPassword,
+          slug,
+          emailVerified: true,
+        },
+        include: {
+          profile: true
         }
-      },
-      include: {
-        profile: true
-      }
-    })
+      });
+    } else {
+      // 更新用户并创建profile
+      user = await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          password: hashedPassword,
+          slug,
+          emailVerified: true,
+          profile: {
+            create: {
+              companyName: 'Company Name',
+              showContact: true,
+              showFollow: true,
+              showReview: true,
+            }
+          }
+        },
+        include: {
+          profile: true
+        }
+      });
+    }
 
     return NextResponse.json(
       { 
@@ -72,7 +139,9 @@ export async function POST(request: Request) {
           id: user.id,
           email: user.email,
           slug: user.slug,
-        }
+          emailVerified: user.emailVerified,
+        },
+        needsVerification: false,
       },
       { status: 201 }
     )

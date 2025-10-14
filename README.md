@@ -28,6 +28,8 @@
 - ✅ **评价生成** - AI驱动的评价内容生成
 - ✅ **联系人保存** - 一键保存到手机通讯录
 - ✅ **后台管理** - 完整的配置管理界面
+- ✅ **邮箱验证** - 注册时邮箱验证码验证
+- ✅ **密码重置** - 忘记密码邮件重置功能
 
 ### 技术亮点
 
@@ -80,19 +82,35 @@ DATABASE_URL="postgresql://user:password@localhost:5432/quicklink_app"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-generated-secret-key"
 
+# 注册邀请码（必需）
+REGISTRATION_INVITE_CODE="your-invite-code"
+
+# Resend 邮件服务（必需 - 用于邮箱验证和密码重置）
+RESEND_API_KEY="re_..."
+EMAIL_FROM="onboarding@resend.dev"
+
 # OpenAI API（可选 - 用于AI评价生成）
 OPENAI_API_KEY="sk-..."
 ```
 
-**生成 NEXTAUTH_SECRET：**
+**生成密钥：**
 
 ```bash
-# 方法1：使用 OpenSSL
+# 生成 NEXTAUTH_SECRET
 openssl rand -base64 32
 
-# 方法2：使用 Node.js
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+# 生成 REGISTRATION_INVITE_CODE
+openssl rand -hex 16
 ```
+
+**配置 Resend 邮件服务：**
+
+1. 访问 [https://resend.com](https://resend.com) 注册账号（免费每月3000封邮件）
+2. 在 Dashboard → API Keys 创建 API Key
+3. 复制 API Key 填入 `RESEND_API_KEY`
+4. 开发环境使用 `onboarding@resend.dev`，生产环境配置自己的域名
+
+> 📧 详细配置步骤请查看：[RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md)
 
 #### 4. 初始化数据库
 
@@ -114,6 +132,38 @@ npm run dev
 ```
 
 访问 [http://localhost:3000](http://localhost:3000) 查看应用！
+
+#### 6. （可选）打开数据库管理工具
+
+```bash
+# 在新的终端窗口运行
+npm run db:studio
+```
+
+访问 [http://localhost:5555](http://localhost:5555) 使用 Prisma Studio 可视化管理数据库。
+
+#### 7. 使用测试账号
+
+项目已经内置了测试账号数据，运行 `npm run db:seed` 后即可使用：
+
+**测试账号：**
+
+```
+邮箱: test@example.com
+密码: password123
+```
+
+**测试链接：**
+
+- 登录页面：http://localhost:3000/login
+- 后台管理：http://localhost:3000/dashboard
+- 测试名片：http://localhost:3000/card/test-demo
+
+**快速测试流程：**
+
+1. 访问登录页面并使用测试账号登录
+2. 进入后台管理页面配置你的名片信息
+3. 访问名片链接查看效果
 
 ---
 
@@ -155,8 +205,12 @@ quicklink-app/
 ├── app/                          # Next.js App Router
 │   ├── api/                      # API 路由
 │   │   ├── auth/                 # 认证相关
-│   │   │   ├── [...nextauth]/   # NextAuth 路由
-│   │   │   └── register/        # 注册接口
+│   │   │   ├── [...nextauth]/       # NextAuth 路由
+│   │   │   ├── register/        # 注册接口
+│   │   │   ├── send-verification/ # 发送验证码
+│   │   │   ├── verify-email/    # 验证邮箱
+│   │   │   ├── forgot-password/ # 忘记密码
+│   │   │   └── reset-password/  # 重置密码
 │   │   ├── profile/             # 用户配置接口
 │   │   └── generate_review/     # 评价生成接口
 │   ├── card/[slug]/             # 动态名片页面
@@ -183,13 +237,20 @@ quicklink-app/
 │   │   └── page.tsx
 │   ├── login/                   # 登录页面
 │   │   └── page.tsx
+│   ├── forgot-password/         # 忘记密码页面
+│   │   └── page.tsx
+│   ├── reset-password/          # 重置密码页面
+│   │   └── page.tsx
 │   ├── layout.tsx               # 根布局
 │   ├── page.tsx                 # 首页
 │   └── globals.css              # 全局样式
 ├── lib/                         # 核心库
 │   ├── prisma.ts               # Prisma Client
 │   ├── auth.ts                 # 认证工具
-│   └── auth-options.ts         # NextAuth 配置
+│   ├── auth-options.ts         # NextAuth 配置
+│   ├── email.ts                # 邮件服务（Resend）
+│   ├── validation.ts           # 输入验证工具
+│   └── env.ts                  # 环境变量验证
 ├── prisma/                      # 数据库
 │   ├── schema.prisma           # 数据模型
 │   └── seed.js                 # 种子数据
@@ -200,6 +261,8 @@ quicklink-app/
 │   └── icons/                  # 图标文件
 ├── .env                        # 环境变量（不提交）
 ├── .env.example                # 环境变量示例
+├── RESEND_INTEGRATION.md       # Resend 邮件服务集成指南
+├── EMAIL_FEATURE_SUMMARY.md    # 邮件功能总结
 ├── tsconfig.json               # TypeScript 配置
 ├── next.config.mjs             # Next.js 配置
 ├── tailwind.config.js          # Tailwind 配置
@@ -247,6 +310,39 @@ NEXTAUTH_URL="https://yourdomain.com"
 ```bash
 NEXTAUTH_SECRET="生成的32位以上随机字符串"
 ```
+
+#### 4. REGISTRATION_INVITE_CODE
+
+用于保护注册接口，防止未授权注册。
+
+```bash
+REGISTRATION_INVITE_CODE="your-invite-code"
+```
+
+#### 5. Resend 邮件服务（必需）
+
+用于发送邮箱验证码和密码重置邮件。
+
+```bash
+# Resend API Key（在 https://resend.com 获取）
+RESEND_API_KEY="re_your_api_key_here"
+
+# 发件人邮箱
+# 开发环境：使用 Resend 提供的测试邮箱
+EMAIL_FROM="onboarding@resend.dev"
+
+# 生产环境：使用您验证的域名
+# EMAIL_FROM="noreply@yourdomain.com"
+```
+
+**获取 Resend API Key：**
+
+1. 访问 [https://resend.com](https://resend.com) 注册账号
+2. 免费账户每月可发送 3,000 封邮件
+3. Dashboard → API Keys → Create API Key
+4. 复制生成的 API Key（以 `re_` 开头）
+
+> 📧 **详细配置指南**：查看 [RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md)
 
 ### 可选环境变量
 
@@ -379,8 +475,9 @@ npm run db:migrate
 # 重置数据库
 npm run db:reset
 
-# 打开 Prisma Studio（可视化管理）
+# 打开 Prisma Studio（可视化管理数据库）
 npm run db:studio
+# 访问 http://localhost:5555 查看和管理数据库
 
 # 填充示例数据
 npm run db:seed
@@ -1141,5 +1238,3 @@ npx prisma generate
 - **Email**: heyemlee@gmail.com
 
 ---
-
-
