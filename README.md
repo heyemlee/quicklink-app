@@ -1,6 +1,7 @@
 # 🤞🏾 QuickLink
 
 > A smart link platform for businesses, allowing users to quickly save contact info, jump to multiple platforms, and generate high-quality reviews with AI, making communication and promotion effortless.
+
 ---
 
 ## 📑 目录
@@ -14,7 +15,6 @@
 - [🎨 开发指南](#-开发指南)
 - [📱 部署指南](#-部署指南)
 - [🔧 API 文档](#-api-文档)
-- [🐛 故障排除](#-故障排除)
 - [📄 License](#-license)
 
 ---
@@ -47,8 +47,8 @@
 #### 1. 克隆项目
 
 ```bash
-git clone https://github.com/yourusername/review_app.git
-cd review_app
+git clone https://github.com/yourusername/quicklink-app.git
+cd quicklink-app
 ```
 
 #### 2. 安装依赖
@@ -74,7 +74,7 @@ cp .env.example .env
 
 ```bash
 # 数据库连接（必需）
-DATABASE_URL="postgresql://user:password@localhost:5432/review_app"
+DATABASE_URL="postgresql://user:password@localhost:5432/quicklink_app"
 
 # NextAuth 配置（必需）
 NEXTAUTH_URL="http://localhost:3000"
@@ -151,7 +151,7 @@ npm run dev
 ## 📦 项目结构
 
 ```
-review_app/
+quicklink-app/
 ├── app/                          # Next.js App Router
 │   ├── api/                      # API 路由
 │   │   ├── auth/                 # 认证相关
@@ -219,7 +219,7 @@ PostgreSQL 数据库连接字符串。
 **本地开发：**
 
 ```bash
-DATABASE_URL="postgresql://postgres:password@localhost:5432/review_app"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/quicklink_app"
 ```
 
 **云数据库（Supabase）：**
@@ -295,11 +295,11 @@ sudo systemctl start postgresql
 psql postgres
 
 # 创建数据库
-CREATE DATABASE review_app;
+CREATE DATABASE quicklink_app;
 
 # 创建用户（可选）
 CREATE USER review_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE review_app TO review_user;
+GRANT ALL PRIVILEGES ON DATABASE quicklink_app TO quicklink_user;
 
 # 退出
 \q
@@ -308,7 +308,7 @@ GRANT ALL PRIVILEGES ON DATABASE review_app TO review_user;
 **3. 配置环境变量**
 
 ```bash
-DATABASE_URL="postgresql://postgres:password@localhost:5432/review_app"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/quicklink_app"
 ```
 
 **4. 推送数据库架构**
@@ -502,7 +502,7 @@ git push origin main
 1. 访问 [vercel.com](https://vercel.com)
 2. 使用 GitHub 账号登录
 3. 点击 "New Project"
-4. Import 你的 review_app 仓库
+4. Import 你的 quicklink-app 仓库
 5. 配置项目设置（通常自动检测）：
    - Framework Preset: `Next.js`
    - Build Command: `npm run build`
@@ -669,7 +669,7 @@ services:
   db:
     image: postgres:14-alpine
     environment:
-      - POSTGRES_DB=review_app
+      - POSTGRES_DB=quicklink_app
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
@@ -742,9 +742,9 @@ sudo -i -u postgres
 
 # 创建数据库和用户
 psql
-CREATE DATABASE review_app;
+CREATE DATABASE quicklink_app;
 CREATE USER review_user WITH PASSWORD 'strong_password';
-GRANT ALL PRIVILEGES ON DATABASE review_app TO review_user;
+GRANT ALL PRIVILEGES ON DATABASE quicklink_app TO quicklink_user;
 \q
 exit
 ```
@@ -753,8 +753,8 @@ exit
 
 ```bash
 # 克隆代码
-git clone https://github.com/yourusername/review_app.git
-cd review_app
+git clone https://github.com/yourusername/quicklink-app.git
+cd quicklink-app
 
 # 安装依赖
 npm install
@@ -832,7 +832,7 @@ sudo certbot renew --dry-run
 **7. 更新应用**
 
 ```bash
-cd /path/to/review_app
+cd /path/to/quicklink-app
 git pull
 npm install
 npm run build
@@ -1115,37 +1115,6 @@ npm run db:generate
 npx prisma generate
 ```
 
-#### Q7: 图片无法显示
-
-**检查：**
-
-1. 图片路径是否正确
-2. 图片是否在 `public/` 目录
-3. Next.js Image 配置是否正确
-
-```typescript
-// 正确用法
-<Image src="/icons/logo.png" alt="Logo" width={200} height={200} />
-```
-
----
-
-## 📚 相关资源
-
-### 官方文档
-
-- [Next.js 文档](https://nextjs.org/docs)
-- [TypeScript 文档](https://www.typescriptlang.org/docs/)
-- [Prisma 文档](https://www.prisma.io/docs)
-- [NextAuth.js 文档](https://next-auth.js.org)
-- [Tailwind CSS 文档](https://tailwindcss.com/docs)
-
-### 教程和指南
-
-- [Next.js 学习](https://nextjs.org/learn)
-- [TypeScript 速成](https://www.typescriptlang.org/docs/handbook/intro.html)
-- [Prisma 快速入门](https://www.prisma.io/docs/getting-started)
-
 ---
 
 ## 🤝 贡献
@@ -1168,20 +1137,9 @@ npx prisma generate
 
 ## 📞 联系方式
 
-- **Issue**: [GitHub Issues](https://github.com/yourusername/review_app/issues)
-- **Email**: your-email@example.com
+- **Issue**: [GitHub Issues](https://github.com/yourusername/quicklink-app/issues)
+- **Email**: heyemlee@gmail.com
 
 ---
 
-## 🙏 致谢
 
-- [Next.js](https://nextjs.org/) - React 框架
-- [Vercel](https://vercel.com/) - 部署平台
-- [Supabase](https://supabase.com/) - 数据库服务
-- [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
-
----
-
-**Made with ❤️ using TypeScript and Next.js**
-
-最后更新：2025-10-14

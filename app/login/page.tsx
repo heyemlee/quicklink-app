@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 interface FormData {
   email: string;
   password: string;
+  inviteCode: string;
 }
 
 export default function LoginPage() {
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
+    inviteCode: '',
   })
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
@@ -88,8 +90,7 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">名片管理系统</h1>
-          <p className="text-white/80">管理您的数字名片</p>
+          <h1 className="text-3xl font-bold text-white mb-2">后台管理系统</h1>
         </div>
 
         {/* Login/Register Form */}
@@ -157,6 +158,24 @@ export default function LoginPage() {
                 placeholder={isLogin ? "输入密码" : "至少6个字符"}
               />
             </div>
+
+            {!isLogin && (
+              <div>
+                <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700 mb-2">
+                  邀请码
+                </label>
+                <input
+                  id="inviteCode"
+                  name="inviteCode"
+                  type="text"
+                  required
+                  value={formData.inviteCode}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
+                  placeholder="请输入邀请码"
+                />
+              </div>
+            )}
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">

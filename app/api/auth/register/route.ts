@@ -4,7 +4,16 @@ import { hashPassword, generateSlug } from '@/lib/auth'
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json()
+    const { email, password, inviteCode } = await request.json()
+
+    // 验证邀请码
+    const validInviteCode = process.env.REGISTRATION_INVITE_CODE
+    if (!inviteCode || inviteCode !== validInviteCode) {
+      return NextResponse.json(
+        { error: '邀请码无效或已过期' },
+        { status: 403 }
+      )
+    }
 
     // 验证输入
     if (!email || !email.includes('@')) {

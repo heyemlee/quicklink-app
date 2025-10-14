@@ -15,8 +15,18 @@ import ReviewSection from "./components/ReviewSection";
 import ReviewModal from "./components/ReviewModal";
 import { WeChatToast, OfflineToast, OfflineIndicator } from "./components/Toast";
 
+interface Profile {
+  companyName: string;
+  phone?: string | null;
+  address?: string | null;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+}
+
 const App = () => {
   // State management
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedPlatform, setSelectedPlatform] = useState<PlatformConfig | null>(null);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
@@ -32,6 +42,23 @@ const App = () => {
   const { isOnline, showOfflineWarning } = useNetworkStatus();
   const { reviewText, isLoading, generateReview } = useReviewGenerator();
   const { openApp } = useAppOpener();
+
+  // Fetch profile data from default user
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/default');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data.profile);
+        }
+      } catch (error) {
+        console.error('获取配置失败:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   // Page loaded effect
   useEffect(() => {
@@ -143,16 +170,25 @@ const App = () => {
     }
   };
 
+  // Apply custom colors from profile
+  const customStyles = profile ? `
+    :root {
+      --primary-color: ${profile.primaryColor};
+      --secondary-color: ${profile.secondaryColor};
+      --accent-color: ${profile.accentColor};
+    }
+  ` : `
+    :root {
+      --primary-color: #7c3aed;
+      --secondary-color: #ec4899;
+      --accent-color: #3b82f6;
+    }
+  `;
+
   return (
     <>
-      {/* Apply default color scheme */}
-      <style jsx global>{`
-        :root {
-          --primary-color: #7c3aed;
-          --secondary-color: #ec4899;
-          --accent-color: #3b82f6;
-        }
-      `}</style>
+      {/* Apply color scheme */}
+      <style jsx global>{customStyles}</style>
       
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         {/* Loading Progress Bar */}
@@ -168,7 +204,11 @@ const App = () => {
         )}
 
       {/* Header */}
-      <Header />
+      <Header 
+        companyName={profile?.companyName}
+        phone={profile?.phone}
+        address={profile?.address}
+      />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-20">
@@ -212,6 +252,18 @@ const App = () => {
         <WeChatToast show={wechatCopied} />
         <OfflineToast show={showOfflineWarning} />
         <OfflineIndicator show={!isOnline && !showOfflineWarning} />
+
+        {/* Footer with Admin Link */}
+        <footer className="py-8 text-center border-t border-gray-200 mt-12">
+          <div className="max-w-6xl mx-auto px-4">
+            <a
+              href="/login"
+              className="inline-block text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              Admin
+            </a>
+          </div>
+        </footer>
       </div>
     </>
   );

@@ -317,7 +317,11 @@ END:VCARD`;
         )}
 
         {/* Header */}
-        <Header companyName={profile?.companyName} />
+        <Header 
+          companyName={profile?.companyName}
+          phone={profile?.phone}
+          address={profile?.address}
+        />
 
         {/* Main Content */}
         <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-20">

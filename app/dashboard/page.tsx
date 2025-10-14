@@ -60,6 +60,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(true)
   const [saving, setSaving] = useState<boolean>(false)
   const [message, setMessage] = useState<string>('')
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [modalType, setModalType] = useState<'success' | 'error'>('success')
   const [activeTab, setActiveTab] = useState<string>('basic')
   
   const [formData, setFormData] = useState<FormData>({
@@ -187,12 +189,17 @@ export default function DashboardPage() {
 
       if (response.ok) {
         setMessage('保存成功！')
-        setTimeout(() => setMessage(''), 3000)
+        setModalType('success')
+        setShowModal(true)
       } else {
         setMessage('保存失败：' + data.error)
+        setModalType('error')
+        setShowModal(true)
       }
     } catch (error) {
       setMessage('保存失败，请稍后重试')
+      setModalType('error')
+      setShowModal(true)
     } finally {
       setSaving(false)
     }
@@ -262,7 +269,8 @@ export default function DashboardPage() {
               onClick={() => {
                 navigator.clipboard.writeText(cardUrl)
                 setMessage('链接已复制！')
-                setTimeout(() => setMessage(''), 2000)
+                setModalType('success')
+                setShowModal(true)
               }}
               className="px-4 py-2 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-colors font-medium"
             >
@@ -271,10 +279,68 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Success Message */}
-        {message && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
-            {message}
+        {/* Success/Error Modal */}
+        {showModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto" onClick={() => setShowModal(false)}>
+            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+              {/* Background overlay */}
+              <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true"></div>
+
+              {/* Center modal */}
+              <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+              {/* Modal panel */}
+              <div 
+                className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="flex flex-col items-center">
+                    {/* Icon */}
+                    <div className={`mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 ${
+                      modalType === 'success' ? 'bg-green-100' : 'bg-red-100'
+                    }`}>
+                      {modalType === 'success' ? (
+                        <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                    </div>
+                    
+                    {/* Message */}
+                    <div className="text-center">
+                      <h3 className={`text-lg font-semibold mb-2 ${
+                        modalType === 'success' ? 'text-green-900' : 'text-red-900'
+                      }`}>
+                        {modalType === 'success' ? '操作成功' : '操作失败'}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {message}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Button */}
+                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className={`w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-2.5 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto sm:text-sm transition-colors ${
+                      modalType === 'success' 
+                        ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' 
+                        : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                    }`}
+                  >
+                    确定
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
