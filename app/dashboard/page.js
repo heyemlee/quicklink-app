@@ -16,6 +16,9 @@ export default function DashboardPage() {
   const [formData, setFormData] = useState({
     // 基本信息
     companyName: '',
+    logoUrl: '',
+    websiteName: '',
+    websiteUrl: '',
     phone: '',
     address: '',
     email: '',
@@ -222,6 +225,7 @@ export default function DashboardPage() {
             <div className="flex">
               {[
                 { id: 'basic', label: '基本信息' },
+                { id: 'website', label: 'Website平台' },
                 { id: 'social', label: '社交媒体' },
                 { id: 'review', label: '评价链接' },
                 { id: 'style', label: '样式配置' },
@@ -301,6 +305,62 @@ export default function DashboardPage() {
                     placeholder="contact@company.com"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                   />
+                </div>
+              </div>
+            )}
+
+            {/* Website Tab */}
+            {activeTab === 'website' && (
+              <div className="space-y-5">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Website平台设置</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  配置在关注模块中显示的Website平台信息
+                </p>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Website名称
+                  </label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    这个名称将显示在关注模块的Website按钮上
+                  </p>
+                  <input
+                    type="text"
+                    name="websiteName"
+                    value={formData.websiteName || ''}
+                    onChange={handleChange}
+                    placeholder="例如：KABI、我的网站等"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Website链接
+                  </label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    用户点击Website按钮时将跳转到这个链接
+                  </p>
+                  <input
+                    type="url"
+                    name="websiteUrl"
+                    value={formData.websiteUrl || ''}
+                    onChange={handleChange}
+                    placeholder="https://www.example.com"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                      <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div className="text-sm text-blue-800">
+                      <p className="font-medium mb-1">提示</p>
+                      <p>如果留空，系统将使用默认的Website配置。确保Website链接以 http:// 或 https:// 开头。</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

@@ -6,9 +6,9 @@ export const metadata = {
   description:
     "Help us grow by sharing your thoughts and following us on social media",
   icons: {
-    icon: "/icons/kabi_favicon.png",
-    apple: "/icons/kabi_favicon.png",
-    shortcut: "/icons/kabi_favicon.png",
+    icon: "/icons/company_logo.png",
+    apple: "/icons/company_logo.png",
+    shortcut: "/icons/company_logo.png",
   },
 };
 

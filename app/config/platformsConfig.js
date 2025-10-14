@@ -44,7 +44,7 @@ export const followPlatforms = [
   {
     id: "website",
     name: "KABI",
-    icon: "/icons/kabi.png",
+    icon: "/icons/company-logo.png",
     isImage: true,
     color: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
     appScheme: "https://www.la-kabi.com/",

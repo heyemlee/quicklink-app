@@ -29,6 +29,9 @@ model Profile {
   
   // 基本信息
   companyName   String   @default("我的公司")
+  logoUrl       String?
+  websiteName   String?
+  websiteUrl    String?
   phone         String?
   address       String?
   email         String?

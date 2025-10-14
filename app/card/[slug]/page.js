@@ -88,6 +88,18 @@ export default function CardPage() {
         if (platform.id === 'wechat' && profile.wechatId) {
           return { ...platform, badge: profile.wechatId }
         }
+        // 如果是website，使用用户自定义的名称和链接
+        if (platform.id === 'website') {
+          const customPlatform = { ...platform }
+          if (profile.websiteName) {
+            customPlatform.name = profile.websiteName
+          }
+          if (profile.websiteUrl) {
+            customPlatform.appScheme = profile.websiteUrl
+            customPlatform.fallbackUrl = profile.websiteUrl
+          }
+          return customPlatform
+        }
         return platform
       })
     : [];

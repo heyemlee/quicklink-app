@@ -45,6 +45,8 @@ export async function GET(request, { params }) {
         phone: user.profile.phone,
         address: user.profile.address,
         email: user.profile.email,
+        websiteName: user.profile.websiteName,
+        websiteUrl: user.profile.websiteUrl,
         
         // 社交媒体
         wechatId: user.profile.wechatId,

@@ -69,6 +69,8 @@ export async function PUT(request) {
       phone: data.phone,
       address: data.address,
       email: data.email,
+      websiteName: data.websiteName,
+      websiteUrl: data.websiteUrl,
       
       // 社交媒体
       wechatId: data.wechatId,
