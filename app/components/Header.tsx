@@ -14,7 +14,12 @@ const Header = ({ companyName }: HeaderProps) => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="text-center">
           <div className="mb-4 sm:mb-5 flex flex-col items-center">
-            <h1 className="text-4xl sm:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight leading-none mb-1.5">
+            <h1 
+              className="text-4xl sm:text-6xl font-black bg-clip-text text-transparent tracking-tight leading-none mb-1.5"
+              style={{
+                backgroundImage: 'linear-gradient(to right, var(--accent-color), var(--primary-color), var(--secondary-color))'
+              }}
+            >
               {displayName}
             </h1>
             {displaySubtitle && (

@@ -49,6 +49,8 @@ model Profile {
   googleReviewUrl     String?
   yelpReviewUrl       String?
   facebookReviewUrl   String?
+  xiaohongshuReviewUrl String?
+  instagramReviewUrl  String?
   
   // 配色方案
   primaryColor    String   @default("#7c3aed")
@@ -57,12 +59,20 @@ model Profile {
   
   // 展示模块控制
   showContact     Boolean  @default(true)
-  showFollow      Boolean  @default(true)
-  showReview      Boolean  @default(true)
+  showFollow      Boolean  @default(false)
+  showReview      Boolean  @default(false)
   
   // 平台显示控制 (JSON数组，存储要显示的平台ID)
-  followPlatforms   String   @default("[\"website\",\"tiktok\",\"instagram\",\"facebook\",\"wechat\",\"xiaohongshu\"]")
-  reviewPlatforms   String   @default("[\"xiaohongshu\",\"yelp\",\"googlemap\",\"instagram\"]")
+  followPlatforms   String   @default("[]")
+  reviewPlatforms   String   @default("[]")
+  
+  // ContactInfo配置 (用于vCard等)
+  contactInfoName         String?
+  contactInfoPhone        String?
+  contactInfoEmail        String?
+  contactInfoAddress      String?
+  contactInfoWebsite      String?
+  contactInfoOrganization String?
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

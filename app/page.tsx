@@ -144,13 +144,28 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Loading Progress Bar */}
-      {pageLoading && (
-        <div className="fixed top-0 left-0 right-0 z-[101]">
-          <div className="h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-pulse"></div>
-        </div>
-      )}
+    <>
+      {/* Apply default color scheme */}
+      <style jsx global>{`
+        :root {
+          --primary-color: #7c3aed;
+          --secondary-color: #ec4899;
+          --accent-color: #3b82f6;
+        }
+      `}</style>
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        {/* Loading Progress Bar */}
+        {pageLoading && (
+          <div className="fixed top-0 left-0 right-0 z-[101]">
+            <div 
+              className="h-1 animate-pulse"
+              style={{ 
+                background: 'linear-gradient(to right, var(--accent-color), var(--primary-color), var(--secondary-color))' 
+              }}
+            ></div>
+          </div>
+        )}
 
       {/* Header */}
       <Header />
@@ -193,11 +208,12 @@ const App = () => {
         onTouchEnd={handleTouchEnd}
       />
 
-      {/* Toasts */}
-      <WeChatToast show={wechatCopied} />
-      <OfflineToast show={showOfflineWarning} />
-      <OfflineIndicator show={!isOnline && !showOfflineWarning} />
-    </div>
+        {/* Toasts */}
+        <WeChatToast show={wechatCopied} />
+        <OfflineToast show={showOfflineWarning} />
+        <OfflineIndicator show={!isOnline && !showOfflineWarning} />
+      </div>
+    </>
   );
 };
 

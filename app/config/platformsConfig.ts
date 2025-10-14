@@ -11,15 +11,6 @@ export interface PlatformConfig {
 
 export const reviewPlatforms: PlatformConfig[] = [
   {
-    id: "xiaohongshu",
-    name: "小红书",
-    icon: "/icons/xiaohongshu.png",
-    isImage: true,
-    color: "bg-red-500",
-    appScheme: "xhsdiscover://",
-    fallbackUrl: "https://www.xiaohongshu.com/explore",
-  },
-  {
     id: "yelp",
     name: "Yelp",
     icon: "/icons/yelp.png",
@@ -37,6 +28,15 @@ export const reviewPlatforms: PlatformConfig[] = [
     color: "bg-blue-500",
     appScheme: "comgooglemaps://?q=YourBusinessName&center=40.7484,-73.9857",
     fallbackUrl: "https://g.page/r/CffWB10nyKpfEAE/review",
+  },
+  {
+    id: "xiaohongshu",
+    name: "小红书",
+    icon: "/icons/xiaohongshu.png",
+    isImage: true,
+    color: "bg-red-500",
+    appScheme: "xhsdiscover://",
+    fallbackUrl: "https://www.xiaohongshu.com/explore",
   },
   {
     id: "instagram",

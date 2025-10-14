@@ -85,6 +85,8 @@ export async function PUT(request: Request) {
       googleReviewUrl: data.googleReviewUrl,
       yelpReviewUrl: data.yelpReviewUrl,
       facebookReviewUrl: data.facebookReviewUrl,
+      xiaohongshuReviewUrl: data.xiaohongshuReviewUrl,
+      instagramReviewUrl: data.instagramReviewUrl,
       
       // 配色方案
       primaryColor: data.primaryColor,
@@ -99,6 +101,14 @@ export async function PUT(request: Request) {
       // 平台显示控制
       followPlatforms: JSON.stringify(data.followPlatforms || []),
       reviewPlatforms: JSON.stringify(data.reviewPlatforms || []),
+      
+      // ContactInfo配置
+      contactInfoName: data.contactInfoName,
+      contactInfoPhone: data.contactInfoPhone,
+      contactInfoEmail: data.contactInfoEmail,
+      contactInfoAddress: data.contactInfoAddress,
+      contactInfoWebsite: data.contactInfoWebsite,
+      contactInfoOrganization: data.contactInfoOrganization,
     }
 
     // 更新 Profile

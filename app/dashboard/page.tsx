@@ -28,6 +28,8 @@ interface FormData {
   googleReviewUrl: string;
   yelpReviewUrl: string;
   facebookReviewUrl: string;
+  xiaohongshuReviewUrl: string;
+  instagramReviewUrl: string;
   
   // 配色方案
   primaryColor: string;
@@ -42,6 +44,14 @@ interface FormData {
   // 平台显示控制
   followPlatforms: string[];
   reviewPlatforms: string[];
+  
+  // ContactInfo配置
+  contactInfoName: string;
+  contactInfoPhone: string;
+  contactInfoEmail: string;
+  contactInfoAddress: string;
+  contactInfoWebsite: string;
+  contactInfoOrganization: string;
 }
 
 export default function DashboardPage() {
@@ -75,6 +85,8 @@ export default function DashboardPage() {
     googleReviewUrl: '',
     yelpReviewUrl: '',
     facebookReviewUrl: '',
+    xiaohongshuReviewUrl: '',
+    instagramReviewUrl: '',
     
     // 配色方案
     primaryColor: '#7c3aed',
@@ -83,12 +95,20 @@ export default function DashboardPage() {
     
     // 展示模块
     showContact: true,
-    showFollow: true,
-    showReview: true,
+    showFollow: false,
+    showReview: false,
     
     // 平台显示控制
-    followPlatforms: ["website","tiktok","instagram","facebook","wechat","xiaohongshu"],
-    reviewPlatforms: ["xiaohongshu","yelp","googlemap","instagram"],
+    followPlatforms: [],
+    reviewPlatforms: [],
+    
+    // ContactInfo配置
+    contactInfoName: '',
+    contactInfoPhone: '',
+    contactInfoEmail: '',
+    contactInfoAddress: '',
+    contactInfoWebsite: '',
+    contactInfoOrganization: '',
   })
 
   useEffect(() => {
@@ -261,14 +281,11 @@ export default function DashboardPage() {
         {/* Tabs */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="border-b">
-            <div className="flex">
+            <div className="flex overflow-x-auto">
               {[
-                { id: 'basic', label: '基本信息' },
-                { id: 'website', label: 'Website平台' },
-                { id: 'social', label: '社交媒体' },
-                { id: 'review', label: '评价链接' },
-                { id: 'style', label: '样式配置' },
+                { id: 'basic', label: '网页信息' },
                 { id: 'display', label: '显示设置' },
+                { id: 'style', label: '主题风格' },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -289,7 +306,10 @@ export default function DashboardPage() {
             {/* Basic Info Tab */}
             {activeTab === 'basic' && (
               <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">基本信息</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">网页信息</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  这些信息将显示在主页上
+                </p>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -331,169 +351,136 @@ export default function DashboardPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    邮箱
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email || ''}
-                    onChange={handleChange}
-                    placeholder="contact@company.com"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Website Tab */}
-            {activeTab === 'website' && (
-              <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Website平台设置</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  配置在关注模块中显示的Website平台信息
-                </p>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Website名称
-                  </label>
-                  <p className="text-xs text-gray-500 mb-2">
-                    这个名称将显示在关注模块的Website按钮上
-                  </p>
-                  <input
-                    type="text"
-                    name="websiteName"
-                    value={formData.websiteName || ''}
-                    onChange={handleChange}
-                    placeholder="例如：KABI、我的网站等"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Website链接
-                  </label>
-                  <p className="text-xs text-gray-500 mb-2">
-                    用户点击Website按钮时将跳转到这个链接
-                  </p>
-                  <input
-                    type="url"
-                    name="websiteUrl"
-                    value={formData.websiteUrl || ''}
-                    onChange={handleChange}
-                    placeholder="https://www.example.com"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                      <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div className="text-sm text-blue-800">
-                      <p className="font-medium mb-1">提示</p>
-                      <p>如果留空，系统将使用默认的Website配置。确保Website链接以 http:// 或 https:// 开头。</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Social Media Tab */}
-            {activeTab === 'social' && (
-              <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">社交媒体链接</h3>
-                
-                {[
-                  { name: 'wechatId' as keyof FormData, label: '微信 ID', placeholder: 'your-wechat-id' },
-                  { name: 'instagram' as keyof FormData, label: 'Instagram', placeholder: 'https://instagram.com/yourprofile' },
-                  { name: 'facebook' as keyof FormData, label: 'Facebook', placeholder: 'https://facebook.com/yourpage' },
-                  { name: 'tiktok' as keyof FormData, label: 'TikTok', placeholder: 'https://tiktok.com/@yourprofile' },
-                  { name: 'xiaohongshu' as keyof FormData, label: '小红书', placeholder: 'https://xiaohongshu.com/user/...' },
-                  { name: 'yelp' as keyof FormData, label: 'Yelp', placeholder: 'https://yelp.com/biz/...' },
-                  { name: 'google' as keyof FormData, label: 'Google', placeholder: 'https://g.page/...' },
-                ].map(field => (
-                  <div key={field.name}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {field.label}
-                    </label>
-                    <input
-                      type="text"
-                      name={field.name}
-                      value={(formData[field.name] as string) || ''}
-                      onChange={handleChange}
-                      placeholder={field.placeholder}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Review Links Tab */}
-            {activeTab === 'review' && (
-              <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">评价平台链接</h3>
-                
-                {[
-                  { name: 'googleReviewUrl' as keyof FormData, label: 'Google 评价链接', placeholder: 'https://g.page/...' },
-                  { name: 'yelpReviewUrl' as keyof FormData, label: 'Yelp 评价链接', placeholder: 'https://yelp.com/writeareview/biz/...' },
-                  { name: 'facebookReviewUrl' as keyof FormData, label: 'Facebook 评价链接', placeholder: 'https://facebook.com/...' },
-                ].map(field => (
-                  <div key={field.name}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {field.label}
-                    </label>
-                    <input
-                      type="url"
-                      name={field.name}
-                      value={(formData[field.name] as string) || ''}
-                      onChange={handleChange}
-                      placeholder={field.placeholder}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    />
-                  </div>
-                ))}
               </div>
             )}
 
             {/* Style Tab */}
             {activeTab === 'style' && (
-              <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">配色方案</h3>
-                
-                {[
-                  { name: 'primaryColor' as keyof FormData, label: '主色调', description: '主要按钮和标题颜色' },
-                  { name: 'secondaryColor' as keyof FormData, label: '次要色调', description: '次要元素颜色' },
-                  { name: 'accentColor' as keyof FormData, label: '强调色', description: '强调和高亮颜色' },
-                ].map(field => (
-                  <div key={field.name}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {field.label}
-                    </label>
-                    <p className="text-xs text-gray-500 mb-2">{field.description}</p>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="color"
-                        name={field.name}
-                        value={formData[field.name] as string}
-                        onChange={handleChange}
-                        className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={formData[field.name] as string}
-                        onChange={(e) => handleChange({ target: { name: field.name, value: e.target.value, type: 'text', checked: false } } as any)}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                      />
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">主题风格</h3>
+                  <p className="text-sm text-gray-600 mb-4">选择一种主题风格应用到您的名片</p>
+                </div>
+
+                {/* 主题风格选择 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* 经典风格 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        primaryColor: '#7c3aed',
+                        secondaryColor: '#ec4899',
+                        accentColor: '#3b82f6'
+                      })
+                    }}
+                    className={`p-6 rounded-xl border-2 transition-all ${
+                      formData.primaryColor === '#7c3aed' && formData.secondaryColor === '#ec4899' && formData.accentColor === '#3b82f6'
+                        ? 'border-purple-600 bg-purple-50 shadow-lg ring-2 ring-purple-200'
+                        : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 via-pink-500 to-blue-500 shadow-lg"></div>
+                      <div className="text-center">
+                        <div className="font-bold text-lg text-gray-900 mb-1">经典风格</div>
+                        <div className="text-sm text-gray-500 mb-3">紫粉渐变 · 活泼时尚</div>
+                      </div>
+                      <div className="flex gap-2 w-full">
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#7c3aed' }}></div>
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#ec4899' }}></div>
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#3b82f6' }}></div>
+                      </div>
+                      {formData.primaryColor === '#7c3aed' && formData.secondaryColor === '#ec4899' && formData.accentColor === '#3b82f6' && (
+                        <div className="flex items-center gap-2 text-purple-600 font-medium text-sm">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          当前主题
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  </button>
+
+                  {/* 简约蓝调 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        primaryColor: '#0ea5e9',
+                        secondaryColor: '#06b6d4',
+                        accentColor: '#3b82f6'
+                      })
+                    }}
+                    className={`p-6 rounded-xl border-2 transition-all ${
+                      formData.primaryColor === '#0ea5e9' && formData.secondaryColor === '#06b6d4' && formData.accentColor === '#3b82f6'
+                        ? 'border-sky-600 bg-sky-50 shadow-lg ring-2 ring-sky-200'
+                        : 'border-gray-200 bg-white hover:border-sky-300 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-sky-500 via-cyan-500 to-blue-500 shadow-lg"></div>
+                      <div className="text-center">
+                        <div className="font-bold text-lg text-gray-900 mb-1">简约蓝调</div>
+                        <div className="text-sm text-gray-500 mb-3">清新专业 · 商务风格</div>
+                      </div>
+                      <div className="flex gap-2 w-full">
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#0ea5e9' }}></div>
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#06b6d4' }}></div>
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#3b82f6' }}></div>
+                      </div>
+                      {formData.primaryColor === '#0ea5e9' && formData.secondaryColor === '#06b6d4' && formData.accentColor === '#3b82f6' && (
+                        <div className="flex items-center gap-2 text-sky-600 font-medium text-sm">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          当前主题
+                        </div>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* 优雅深色 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        primaryColor: '#1e293b',
+                        secondaryColor: '#475569',
+                        accentColor: '#64748b'
+                      })
+                    }}
+                    className={`p-6 rounded-xl border-2 transition-all ${
+                      formData.primaryColor === '#1e293b' && formData.secondaryColor === '#475569' && formData.accentColor === '#64748b'
+                        ? 'border-slate-600 bg-slate-50 shadow-lg ring-2 ring-slate-200'
+                        : 'border-gray-200 bg-white hover:border-slate-300 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-slate-800 via-slate-600 to-slate-500 shadow-lg"></div>
+                      <div className="text-center">
+                        <div className="font-bold text-lg text-gray-900 mb-1">优雅深色</div>
+                        <div className="text-sm text-gray-500 mb-3">沉稳大气 · 高端奢华</div>
+                      </div>
+                      <div className="flex gap-2 w-full">
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#1e293b' }}></div>
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#475569' }}></div>
+                        <div className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#64748b' }}></div>
+                      </div>
+                      {formData.primaryColor === '#1e293b' && formData.secondaryColor === '#475569' && formData.accentColor === '#64748b' && (
+                        <div className="flex items-center gap-2 text-slate-600 font-medium text-sm">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          当前主题
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -501,136 +488,384 @@ export default function DashboardPage() {
             {activeTab === 'display' && (
               <div className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">基本模块显示</h3>
-                  <p className="text-sm text-gray-600 mb-4">选择在名片页面上显示哪些基本模块</p>
-                  
-                  <div className="space-y-3">
-                    {[
-                      { name: 'showContact' as keyof FormData, label: '显示联系信息', description: '显示保存联系人按钮和联系信息' },
-                      { name: 'showFollow' as keyof FormData, label: '显示关注模块', description: '显示社交媒体关注按钮' },
-                      { name: 'showReview' as keyof FormData, label: '显示评价模块', description: '显示撰写评价按钮' },
-                    ].map(field => (
-                      <div key={String(field.name)} className="flex items-start p-3 bg-gray-50 rounded-lg">
-                        <input
-                          type="checkbox"
-                          id={String(field.name)}
-                          name={String(field.name)}
-                          checked={formData[field.name] as boolean}
-                          onChange={handleChange}
-                          className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
-                        />
-                        <label htmlFor={String(field.name)} className="ml-3">
-                          <div className="text-sm font-medium text-gray-700">{field.label}</div>
-                          <div className="text-xs text-gray-500">{field.description}</div>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">模块显示设置</h3>
+                  <p className="text-sm text-gray-600 mb-4">选择要在名片页面上显示的模块，并配置相应的信息</p>
                 </div>
 
-                {/* 关注平台选择 */}
-                {formData.showFollow && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">关注模块 - 平台选择</h3>
-                    <p className="text-sm text-gray-600 mb-4">选择要在关注模块中显示的平台</p>
-                    
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                      {followPlatforms.map((platform: PlatformConfig) => {
-                        const isSelected = formData.followPlatforms?.includes(platform.id)
-                        return (
-                          <button
-                            key={platform.id}
-                            type="button"
-                            onClick={() => togglePlatform(platform.id, 'follow')}
-                            className={`relative p-4 rounded-xl border-2 transition-all ${
-                              isSelected
-                                ? 'border-purple-600 bg-purple-50 shadow-md'
-                                : 'border-gray-200 bg-white hover:border-gray-300'
-                            }`}
-                          >
-                            {isSelected && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center">
-                                <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path d="M5 13l4 4L19 7"></path>
-                                </svg>
-                              </div>
-                            )}
-                            <div className="flex flex-col items-center gap-2">
-                              {platform.isImage ? (
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${platform.color}`}>
-                                  <div className="bg-white rounded-full p-1.5">
-                                    <Image 
-                                      src={platform.icon} 
-                                      alt={platform.name}
-                                      width={32}
-                                      height={32}
-                                      className="w-6 h-6 object-contain"
-                                    />
-                                  </div>
-                                </div>
-                              ) : (
-                                <span className="text-2xl">{platform.icon}</span>
-                              )}
-                              <span className="text-sm font-medium text-gray-700">{platform.name}</span>
-                            </div>
-                          </button>
-                        )
-                      })}
-                    </div>
+                {/* 联系信息模块 */}
+                <div className="border rounded-lg p-5 bg-gray-50">
+                  <div className="flex items-start mb-4">
+                    <input
+                      type="checkbox"
+                      id="showContact"
+                      name="showContact"
+                      checked={formData.showContact}
+                      onChange={handleChange}
+                      className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
+                    />
+                    <label htmlFor="showContact" className="ml-3">
+                      <div className="text-base font-semibold text-gray-900">显示联系信息</div>
+                      <div className="text-sm text-gray-600">显示保存联系人按钮和名片配置</div>
+                    </label>
                   </div>
-                )}
 
-                {/* 评价平台选择 */}
-                {formData.showReview && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">评价模块 - 平台选择</h3>
-                    <p className="text-sm text-gray-600 mb-4">选择要在评价模块中显示的平台</p>
-                    
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                      {reviewPlatforms.map((platform: PlatformConfig) => {
-                        const isSelected = formData.reviewPlatforms?.includes(platform.id)
-                        return (
-                          <button
-                            key={platform.id}
-                            type="button"
-                            onClick={() => togglePlatform(platform.id, 'review')}
-                            className={`relative p-4 rounded-xl border-2 transition-all ${
-                              isSelected
-                                ? 'border-pink-600 bg-pink-50 shadow-md'
-                                : 'border-gray-200 bg-white hover:border-gray-300'
-                            }`}
-                          >
-                            {isSelected && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-pink-600 rounded-full flex items-center justify-center">
-                                <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path d="M5 13l4 4L19 7"></path>
-                                </svg>
-                              </div>
-                            )}
-                            <div className="flex flex-col items-center gap-2">
-                              {platform.isImage ? (
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${platform.color}`}>
-                                  <div className="bg-white rounded-full p-1.5">
-                                    <Image 
-                                      src={platform.icon} 
-                                      alt={platform.name}
-                                      width={32}
-                                      height={32}
-                                      className="w-6 h-6 object-contain"
-                                    />
-                                  </div>
-                                </div>
-                              ) : (
-                                <span className="text-2xl">{platform.icon}</span>
-                              )}
-                              <span className="text-sm font-medium text-gray-700">{platform.name}</span>
-                            </div>
-                          </button>
-                        )
-                      })}
+                  {formData.showContact && (
+                    <div className="mt-6 pl-8 border-l-2 border-green-200">
+                      <div className="bg-white rounded-lg p-4 border border-green-100">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                          名片信息配置
+                        </h4>
+                        <p className="text-xs text-gray-600 mb-4">
+                          这些信息将用于生成联系人名片(vCard)文件
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              名称
+                            </label>
+                            <input
+                              type="text"
+                              name="contactInfoName"
+                              value={formData.contactInfoName || ''}
+                              onChange={handleChange}
+                              placeholder="My Name"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              电话
+                            </label>
+                            <input
+                              type="tel"
+                              name="contactInfoPhone"
+                              value={formData.contactInfoPhone || ''}
+                              onChange={handleChange}
+                              placeholder="(001) 123-4567"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              邮箱
+                            </label>
+                            <input
+                              type="email"
+                              name="contactInfoEmail"
+                              value={formData.contactInfoEmail || ''}
+                              onChange={handleChange}
+                              placeholder="office@abc.com"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              地址
+                            </label>
+                            <input
+                              type="text"
+                              name="contactInfoAddress"
+                              value={formData.contactInfoAddress || ''}
+                              onChange={handleChange}
+                              placeholder="123 abc Ave, City, CA"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              网站
+                            </label>
+                            <input
+                              type="url"
+                              name="contactInfoWebsite"
+                              value={formData.contactInfoWebsite || ''}
+                              onChange={handleChange}
+                              placeholder="https://www.abc.com"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              公司
+                            </label>
+                            <input
+                              type="text"
+                              name="contactInfoOrganization"
+                              value={formData.contactInfoOrganization || ''}
+                              onChange={handleChange}
+                              placeholder="Company"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                  )}
+                </div>
+
+                {/* 关注模块 */}
+                <div className="border rounded-lg p-5 bg-gray-50">
+                  <div className="flex items-start mb-4">
+                    <input
+                      type="checkbox"
+                      id="showFollow"
+                      name="showFollow"
+                      checked={formData.showFollow}
+                      onChange={handleChange}
+                      className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
+                    />
+                    <label htmlFor="showFollow" className="ml-3">
+                      <div className="text-base font-semibold text-gray-900">显示关注模块</div>
+                      <div className="text-sm text-gray-600">显示社交媒体关注按钮</div>
+                    </label>
                   </div>
-                )}
+
+                  {formData.showFollow && (
+                    <div className="mt-6 space-y-6 pl-8 border-l-2 border-purple-200">
+                      {/* 平台选择 */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">选择要显示的平台</h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                          {followPlatforms.map((platform: PlatformConfig) => {
+                            const isSelected = formData.followPlatforms?.includes(platform.id)
+                            return (
+                              <button
+                                key={platform.id}
+                                type="button"
+                                onClick={() => togglePlatform(platform.id, 'follow')}
+                                className={`relative p-3 rounded-xl border-2 transition-all ${
+                                  isSelected
+                                    ? 'border-purple-600 bg-purple-50 shadow-md'
+                                    : 'border-gray-200 bg-white hover:border-gray-300'
+                                }`}
+                              >
+                                {isSelected && (
+                                  <div className="absolute top-1.5 right-1.5 w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center">
+                                    <svg className="w-2.5 h-2.5 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                  </div>
+                                )}
+                                <div className="flex flex-col items-center gap-2">
+                                  {platform.isImage ? (
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${platform.color}`}>
+                                      <div className="bg-white rounded-full p-1">
+                                        <Image 
+                                          src={platform.icon} 
+                                          alt={platform.name}
+                                          width={24}
+                                          height={24}
+                                          className="w-5 h-5 object-contain"
+                                        />
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <span className="text-xl">{platform.icon}</span>
+                                  )}
+                                  <span className="text-xs font-medium text-gray-700">{platform.name}</span>
+                                </div>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Website平台配置 - 仅在选中时显示 */}
+                      {formData.followPlatforms?.includes('website') && (
+                        <div className="bg-white rounded-lg p-4 border border-purple-100">
+                          <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
+                            Website平台配置
+                          </h4>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Website名称
+                              </label>
+                              <input
+                                type="text"
+                                name="websiteName"
+                                value={formData.websiteName || ''}
+                                onChange={handleChange}
+                                placeholder="例如：KABI、我的网站等"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Website链接
+                              </label>
+                              <input
+                                type="url"
+                                name="websiteUrl"
+                                value={formData.websiteUrl || ''}
+                                onChange={handleChange}
+                                placeholder="https://www.example.com"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 社交媒体链接配置 - 仅显示选中的平台 */}
+                      {(() => {
+                        const socialMediaFields = [
+                          { id: 'wechat', name: 'wechatId' as keyof FormData, label: '微信 ID', placeholder: 'your-wechat-id' },
+                          { id: 'instagram', name: 'instagram' as keyof FormData, label: 'Instagram', placeholder: 'https://instagram.com/yourprofile' },
+                          { id: 'facebook', name: 'facebook' as keyof FormData, label: 'Facebook', placeholder: 'https://facebook.com/yourpage' },
+                          { id: 'tiktok', name: 'tiktok' as keyof FormData, label: 'TikTok', placeholder: 'https://tiktok.com/@yourprofile' },
+                          { id: 'xiaohongshu', name: 'xiaohongshu' as keyof FormData, label: '小红书', placeholder: 'https://xiaohongshu.com/user/...' },
+                          { id: 'yelp', name: 'yelp' as keyof FormData, label: 'Yelp', placeholder: 'https://yelp.com/biz/...' },
+                          { id: 'google', name: 'google' as keyof FormData, label: 'Google', placeholder: 'https://g.page/...' },
+                        ].filter(field => formData.followPlatforms?.includes(field.id));
+                        
+                        if (socialMediaFields.length === 0) return null;
+                        
+                        return (
+                          <div className="bg-white rounded-lg p-4 border border-purple-100">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                              <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
+                              社交媒体链接配置
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {socialMediaFields.map(field => (
+                                <div key={field.name}>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {field.label}
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name={field.name}
+                                    value={(formData[field.name] as string) || ''}
+                                    onChange={handleChange}
+                                    placeholder={field.placeholder}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+
+                {/* 评价模块 */}
+                <div className="border rounded-lg p-5 bg-gray-50">
+                  <div className="flex items-start mb-4">
+                    <input
+                      type="checkbox"
+                      id="showReview"
+                      name="showReview"
+                      checked={formData.showReview}
+                      onChange={handleChange}
+                      className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
+                    />
+                    <label htmlFor="showReview" className="ml-3">
+                      <div className="text-base font-semibold text-gray-900">显示评价模块</div>
+                      <div className="text-sm text-gray-600">显示撰写评价按钮</div>
+                    </label>
+                  </div>
+
+                  {formData.showReview && (
+                    <div className="mt-6 space-y-6 pl-8 border-l-2 border-pink-200">
+                      {/* 平台选择 */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">选择要显示的平台</h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                          {reviewPlatforms.map((platform: PlatformConfig) => {
+                            const isSelected = formData.reviewPlatforms?.includes(platform.id)
+                            return (
+                              <button
+                                key={platform.id}
+                                type="button"
+                                onClick={() => togglePlatform(platform.id, 'review')}
+                                className={`relative p-3 rounded-xl border-2 transition-all ${
+                                  isSelected
+                                    ? 'border-pink-600 bg-pink-50 shadow-md'
+                                    : 'border-gray-200 bg-white hover:border-gray-300'
+                                }`}
+                              >
+                                {isSelected && (
+                                  <div className="absolute top-1.5 right-1.5 w-4 h-4 bg-pink-600 rounded-full flex items-center justify-center">
+                                    <svg className="w-2.5 h-2.5 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                  </div>
+                                )}
+                                <div className="flex flex-col items-center gap-2">
+                                  {platform.isImage ? (
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${platform.color}`}>
+                                      <div className="bg-white rounded-full p-1">
+                                        <Image 
+                                          src={platform.icon} 
+                                          alt={platform.name}
+                                          width={24}
+                                          height={24}
+                                          className="w-5 h-5 object-contain"
+                                        />
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <span className="text-xl">{platform.icon}</span>
+                                  )}
+                                  <span className="text-xs font-medium text-gray-700">{platform.name}</span>
+                                </div>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      {/* 评价平台链接配置 - 仅显示选中的平台 */}
+                      {(() => {
+                        const reviewLinkFields = [
+                          { id: 'googlemap', name: 'googleReviewUrl' as keyof FormData, label: 'Google 评价链接', placeholder: 'https://g.page/...' },
+                          { id: 'yelp', name: 'yelpReviewUrl' as keyof FormData, label: 'Yelp 评价链接', placeholder: 'https://yelp.com/writeareview/biz/...' },
+                          { id: 'facebook', name: 'facebookReviewUrl' as keyof FormData, label: 'Facebook 评价链接', placeholder: 'https://facebook.com/...' },
+                          { id: 'xiaohongshu', name: 'xiaohongshuReviewUrl' as keyof FormData, label: '小红书评价链接', placeholder: 'https://xiaohongshu.com/...' },
+                          { id: 'instagram', name: 'instagramReviewUrl' as keyof FormData, label: 'Instagram 评价链接', placeholder: 'https://instagram.com/...' },
+                        ].filter(field => formData.reviewPlatforms?.includes(field.id));
+                        
+                        if (reviewLinkFields.length === 0) return null;
+                        
+                        return (
+                          <div className="bg-white rounded-lg p-4 border border-pink-100">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                              <span className="w-2 h-2 bg-pink-600 rounded-full"></span>
+                              评价平台链接配置
+                            </h4>
+                            <div className="space-y-3">
+                              {reviewLinkFields.map(field => (
+                                <div key={field.name}>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {field.label}
+                                  </label>
+                                  <input
+                                    type="url"
+                                    name={field.name}
+                                    value={(formData[field.name] as string) || ''}
+                                    onChange={handleChange}
+                                    placeholder={field.placeholder}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

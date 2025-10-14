@@ -10,11 +10,14 @@ const SaveContactButton = ({ onClick }: SaveContactButtonProps) => {
     <section className="mb-8 sm:mb-12">
       <button
         onClick={onClick}
-        className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-98 sm:hover:scale-[1.02] flex items-center justify-between group touch-manipulation"
+        className="w-full text-white p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-98 sm:hover:scale-[1.02] flex items-center justify-between group touch-manipulation"
+        style={{
+          background: 'linear-gradient(to right, var(--accent-color), var(--primary-color), var(--secondary-color))'
+        }}
       >
         <div className="flex items-center gap-4">
           <div className="bg-white rounded-full p-3 sm:p-4 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <UserPlus size={32} className="text-purple-600" />
+            <UserPlus size={32} style={{ color: 'var(--primary-color)' }} />
           </div>
           <div className="text-left">
             <h3 className="font-bold text-lg sm:text-xl mb-1">Save My Contact</h3>

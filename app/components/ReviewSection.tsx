@@ -11,7 +11,12 @@ const ReviewSection = ({ platforms, onPlatformClick }: ReviewSectionProps) => {
   return (
     <section>
       <div className="flex items-center gap-3 mb-4 sm:mb-6">
-        <div className="flex-shrink-0 w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-full"></div>
+        <div 
+          className="flex-shrink-0 w-1 h-8 rounded-full"
+          style={{
+            background: 'linear-gradient(to bottom, var(--primary-color), var(--secondary-color))'
+          }}
+        ></div>
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
           Write a Good Review
         </h2>

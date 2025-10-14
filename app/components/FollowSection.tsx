@@ -11,7 +11,12 @@ const FollowSection = ({ platforms, onPlatformClick }: FollowSectionProps) => {
   return (
     <section className="mb-8 sm:mb-12">
       <div className="flex items-center gap-3 mb-4 sm:mb-6">
-        <div className="flex-shrink-0 w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
+        <div 
+          className="flex-shrink-0 w-1 h-8 rounded-full"
+          style={{
+            background: 'linear-gradient(to bottom, var(--accent-color), var(--primary-color))'
+          }}
+        ></div>
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
           Follow Us
         </h2>

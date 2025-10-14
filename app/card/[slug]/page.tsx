@@ -30,6 +30,12 @@ interface Profile {
   showReview: boolean;
   followPlatforms: string[];
   reviewPlatforms: string[];
+  contactInfoName?: string | null;
+  contactInfoPhone?: string | null;
+  contactInfoEmail?: string | null;
+  contactInfoAddress?: string | null;
+  contactInfoWebsite?: string | null;
+  contactInfoOrganization?: string | null;
 }
 
 interface ContactInfo {
@@ -96,12 +102,12 @@ export default function CardPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Build contact info from profile
+  // Build contact info from profile - use contactInfo fields if available, fallback to basic profile fields
   const contactInfo: ContactInfo | null = profile ? {
-    name: profile.companyName,
-    phone: profile.phone,
-    email: profile.email,
-    address: profile.address,
+    name: profile.contactInfoName || profile.companyName,
+    phone: profile.contactInfoPhone || profile.phone,
+    email: profile.contactInfoEmail || profile.email,
+    address: profile.contactInfoAddress || profile.address,
   } : null;
 
   // Build follow platforms based on profile settings
@@ -204,7 +210,7 @@ export default function CardPage() {
 
   // Handle save contact
   const handleSaveContact = () => {
-    if (!contactInfo) return;
+    if (!contactInfo || !profile) return;
     triggerHaptic('medium');
     
     // Generate vCard
@@ -212,9 +218,11 @@ export default function CardPage() {
       const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:${contact.name || ''}
+${profile.contactInfoOrganization ? `ORG:${profile.contactInfoOrganization}` : ''}
 TEL:${contact.phone || ''}
 EMAIL:${contact.email || ''}
 ADR:;;${contact.address || ''};;;;
+${profile.contactInfoWebsite ? `URL:${profile.contactInfoWebsite}` : ''}
 END:VCARD`;
 
       const blob = new Blob([vcard], { type: 'text/vcard' });
@@ -299,7 +307,12 @@ END:VCARD`;
         {/* Loading Progress Bar */}
         {pageLoading && (
           <div className="fixed top-0 left-0 right-0 z-[101]">
-            <div className="h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-pulse"></div>
+            <div 
+              className="h-1 animate-pulse" 
+              style={{ 
+                background: `linear-gradient(to right, var(--accent-color), var(--primary-color), var(--secondary-color))` 
+              }}
+            ></div>
           </div>
         )}
 
