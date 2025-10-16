@@ -27,7 +27,7 @@ export const useReviewGenerator = () => {
       const data = await response.json();
       setReviewText(data.review);
       triggerHaptic('success');
-    } catch (error) {
+    } catch {
       const mockReviews = [
         "Amazing experience! The service was outstanding and the atmosphere was perfect. Highly recommend to everyone! ⭐⭐⭐⭐⭐",
         "Absolutely loved it! Great quality, friendly staff, and excellent value. Will definitely come back again! 💯",

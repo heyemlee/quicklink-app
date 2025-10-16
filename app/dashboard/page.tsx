@@ -55,6 +55,50 @@ interface FormData {
   contactInfoOrganization: string;
 }
 
+interface PlatformStat {
+  platform: string;
+  platformType: string | null;
+  count: number;
+}
+
+interface TrendItem {
+  date: string;
+  count: number;
+}
+
+interface HourlyItem {
+  hour: number;
+  count: number;
+}
+
+interface AnalyticsData {
+  summary: {
+    totalViews: number;
+    totalSaveContacts: number;
+    totalPlatformClicks: number;
+    uniqueVisitors: number;
+    period: string;
+    dateRange: {
+      start: string;
+      end: string;
+    };
+  };
+  platformStats: {
+    follow: PlatformStat[];
+    review: PlatformStat[];
+  };
+  trends: {
+    daily: TrendItem[];
+    hourly: HourlyItem[];
+  };
+  recentActivities: Array<{
+    eventType: string;
+    platform: string | null;
+    platformType: string | null;
+    createdAt: Date;
+  }>;
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -64,7 +108,7 @@ export default function DashboardPage() {
   const [showModal, setShowModal] = useState<boolean>(false)
   const [modalType, setModalType] = useState<'success' | 'error'>('success')
   const [activeTab, setActiveTab] = useState<string>('analytics')
-  const [analyticsData, setAnalyticsData] = useState<any>(null)
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
   const [analyticsLoading, setAnalyticsLoading] = useState<boolean>(false)
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1)
@@ -235,7 +279,7 @@ export default function DashboardPage() {
         setModalType('error')
         setShowModal(true)
       }
-    } catch (error) {
+    } catch {
       setMessage('Save failed, please try again later')
       setModalType('error')
       setShowModal(true)
@@ -579,7 +623,7 @@ export default function DashboardPage() {
                         </h4>
                         {analyticsData.platformStats.follow.length > 0 ? (
                           <div className="space-y-3">
-                            {analyticsData.platformStats.follow.map((stat: any, index: number) => (
+                            {analyticsData.platformStats.follow.map((stat: PlatformStat, index: number) => (
                               <div key={stat.platform} className="flex items-center gap-3">
                                 <div className="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold text-purple-600">
                                   {index + 1}
@@ -612,7 +656,7 @@ export default function DashboardPage() {
                         </h4>
                         {analyticsData.platformStats.review.length > 0 ? (
                           <div className="space-y-3">
-                            {analyticsData.platformStats.review.map((stat: any, index: number) => (
+                            {analyticsData.platformStats.review.map((stat: PlatformStat, index: number) => (
                               <div key={stat.platform} className="flex items-center gap-3">
                                 <div className="flex-shrink-0 w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-sm font-bold text-pink-600">
                                   {index + 1}
@@ -645,8 +689,8 @@ export default function DashboardPage() {
                         {viewMode === 'all' ? 'Monthly Trend (Last 12 Months)' : 'Daily Trend (Last 7 Days)'}
                       </h4>
                       <div className="flex items-end justify-between gap-2 h-48">
-                        {analyticsData.trends.daily.map((item: any) => {
-                          const maxCount = Math.max(...analyticsData.trends.daily.map((d: any) => d.count), 1)
+                        {analyticsData.trends.daily.map((item: TrendItem) => {
+                          const maxCount = Math.max(...analyticsData.trends.daily.map((d: TrendItem) => d.count), 1)
                           const height = (item.count / maxCount) * 100
                           
                           // Format label based on view mode
@@ -691,8 +735,8 @@ export default function DashboardPage() {
                         24-Hour Activity Heatmap
                       </h4>
                       <div className="grid grid-cols-12 gap-1">
-                        {analyticsData.trends.hourly.map((hourData: any) => {
-                          const maxCount = Math.max(...analyticsData.trends.hourly.map((h: any) => h.count), 1)
+                        {analyticsData.trends.hourly.map((hourData: HourlyItem) => {
+                          const maxCount = Math.max(...analyticsData.trends.hourly.map((h: HourlyItem) => h.count), 1)
                           const intensity = hourData.count / maxCount
                           return (
                             <div 
@@ -723,7 +767,7 @@ export default function DashboardPage() {
                         Recent Activity Feed
                       </h4>
                       <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {analyticsData.recentActivities.map((activity: any, index: number) => (
+                        {analyticsData.recentActivities.map((activity, index: number) => (
                           <div key={index} className="flex items-center gap-3 text-sm py-2 border-b last:border-b-0">
                             <span className="text-xl">
                               {activity.eventType === 'page_view' ? '👁️' :

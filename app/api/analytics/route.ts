@@ -3,6 +3,22 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth-options'
 import prisma from '@/lib/prisma'
 
+// 类型定义
+interface PlatformClick {
+  platform: string
+  platformType: string | null
+  count: number
+}
+
+interface PlatformClicksMap {
+  [key: string]: PlatformClick
+}
+
+interface TrendData {
+  date: string
+  count: number
+}
+
 // POST /api/analytics - 记录用户行为事件（公开，不需要认证）
 export async function POST(request: NextRequest) {
   try {
@@ -140,7 +156,7 @@ export async function GET(request: NextRequest) {
     // 平台点击统计
     const platformClicks = analytics
       .filter(a => a.eventType === 'platform_click')
-      .reduce((acc: any, curr) => {
+      .reduce((acc: PlatformClicksMap, curr) => {
         if (!curr.platform) return acc
         
         if (!acc[curr.platform]) {
@@ -155,11 +171,11 @@ export async function GET(request: NextRequest) {
       }, {})
 
     // 按平台类型分组（follow vs review）
-    const followClicks = Object.values(platformClicks).filter((p: any) => p.platformType === 'follow')
-    const reviewClicks = Object.values(platformClicks).filter((p: any) => p.platformType === 'review')
+    const followClicks = Object.values(platformClicks).filter((p: PlatformClick) => p.platformType === 'follow')
+    const reviewClicks = Object.values(platformClicks).filter((p: PlatformClick) => p.platformType === 'review')
 
     // 趋势数据：根据时间范围调整
-    let dailyViews: any[]
+    let dailyViews: TrendData[]
     
     if (all === 'true') {
       // All time: show monthly trend
@@ -227,8 +243,8 @@ export async function GET(request: NextRequest) {
         }
       },
       platformStats: {
-        follow: followClicks.sort((a: any, b: any) => b.count - a.count),
-        review: reviewClicks.sort((a: any, b: any) => b.count - a.count)
+        follow: followClicks.sort((a: PlatformClick, b: PlatformClick) => b.count - a.count),
+        review: reviewClicks.sort((a: PlatformClick, b: PlatformClick) => b.count - a.count)
       },
       trends: {
         daily: dailyViews,

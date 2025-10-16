@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth-options'
 import prisma from '@/lib/prisma'
 
 // 获取当前用户的 Profile
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
 

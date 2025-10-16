@@ -34,13 +34,13 @@ export async function GET(request: Request, { params }: RouteParams) {
     
     try {
       followPlatforms = JSON.parse(user.profile.followPlatforms || '[]')
-    } catch (e) {
+    } catch {
       followPlatforms = []
     }
     
     try {
       reviewPlatforms = JSON.parse(user.profile.reviewPlatforms || '[]')
-    } catch (e) {
+    } catch {
       reviewPlatforms = []
     }
 

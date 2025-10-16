@@ -14,7 +14,6 @@ function ResetPasswordForm() {
   const [validating, setValidating] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [tokenValid, setTokenValid] = useState(false);
   const [tokenError, setTokenError] = useState('');
 
   useEffect(() => {
@@ -28,9 +27,7 @@ function ResetPasswordForm() {
     fetch(`/api/auth/reset-password?token=${token}`)
       .then(res => res.json())
       .then(data => {
-        if (data.valid) {
-          setTokenValid(true);
-        } else {
+        if (!data.valid) {
           setTokenError(data.error || 'Reset link is invalid or expired');
         }
       })
@@ -79,7 +76,7 @@ function ResetPasswordForm() {
           setError(data.error || 'Reset failed, please try again later');
         }
       }
-    } catch (err) {
+    } catch {
       setError('Network error, please try again later');
     } finally {
       setLoading(false);

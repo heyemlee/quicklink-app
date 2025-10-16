@@ -84,8 +84,8 @@ export default function CardPage() {
         }
 
         setProfile(data.profile);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '加载失败');
       } finally {
         setLoading(false);
       }

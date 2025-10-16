@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
 // 获取默认用户的 Profile（公开访问，用于主页）
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // 获取第一个用户作为默认用户
     const user = await prisma.user.findFirst({
@@ -27,13 +27,13 @@ export async function GET(request: Request) {
     
     try {
       followPlatforms = JSON.parse(user.profile.followPlatforms || '[]')
-    } catch (e) {
+    } catch {
       followPlatforms = []
     }
     
     try {
       reviewPlatforms = JSON.parse(user.profile.reviewPlatforms || '[]')
-    } catch (e) {
+    } catch {
       reviewPlatforms = []
     }
 

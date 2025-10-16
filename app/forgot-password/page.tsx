@@ -1,10 +1,8 @@
 "use client";
 import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function ForgotPasswordPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -32,7 +30,7 @@ export default function ForgotPasswordPage() {
       } else {
         setError(data.error || 'Failed to send email, please try again later');
       }
-    } catch (err) {
+    } catch {
       setError('Network error, please try again later');
     } finally {
       setLoading(false);

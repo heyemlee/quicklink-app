@@ -69,7 +69,7 @@ export default function LoginPage() {
           })
         }, 1000)
       }
-    } catch (err) {
+    } catch {
       setError('Failed to send verification code, please try again later')
     } finally {
       setSendingCode(false)
@@ -128,7 +128,7 @@ export default function LoginPage() {
           }
         }
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred, please try again later')
     } finally {
       setLoading(false)

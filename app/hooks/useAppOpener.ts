@@ -18,7 +18,6 @@ export const useAppOpener = () => {
 
     // Safari-compatible app opening method
     let hasBlurred = false;
-    let timeoutId: NodeJS.Timeout;
 
     // Track if page loses focus (app opened)
     const blurHandler = () => {
@@ -42,7 +41,7 @@ export const useAppOpener = () => {
     }
 
     // Fallback to web URL if app doesn't open within 2 seconds
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       window.removeEventListener('blur', blurHandler);
       document.removeEventListener('visibilitychange', visibilityHandler);
       
