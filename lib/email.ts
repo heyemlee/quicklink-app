@@ -1,7 +1,18 @@
 import { Resend } from 'resend';
 
-// 初始化 Resend 客户端
-const resend = new Resend(process.env.RESEND_API_KEY);
+// 延迟初始化 Resend 客户端，避免构建时错误
+let resendInstance: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resendInstance) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY is not configured');
+    }
+    resendInstance = new Resend(apiKey);
+  }
+  return resendInstance;
+}
 
 // 发件人邮箱（需要在 Resend 中验证的域名）
 const FROM_EMAIL = process.env.EMAIL_FROM || 'onboarding@resend.dev';
@@ -29,6 +40,7 @@ export async function sendVerificationEmail(
   userName?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    const resend = getResendClient();
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to,
@@ -61,6 +73,7 @@ export async function sendPasswordResetEmail(
   userName?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    const resend = getResendClient();
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
     const { data, error } = await resend.emails.send({
