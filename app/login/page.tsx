@@ -2,7 +2,6 @@
 import { useState, FormEvent, ChangeEvent } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 interface FormData {
   email: string;
@@ -22,9 +21,11 @@ export default function LoginPage() {
   })
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [sendingCode, setSendingCode] = useState<boolean>(false)
-  const [countdown, setCountdown] = useState<number>(0)
   const [successMessage, setSuccessMessage] = useState<string>('')
+
+  // 邮箱验证功能已禁用 - 以下代码已注释
+  /* const [sendingCode, setSendingCode] = useState<boolean>(false)
+  const [countdown, setCountdown] = useState<number>(0)
 
   // Send verification code
   const handleSendVerificationCode = async () => {
@@ -74,7 +75,7 @@ export default function LoginPage() {
     } finally {
       setSendingCode(false)
     }
-  }
+  } */
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -97,7 +98,7 @@ export default function LoginPage() {
           router.push('/dashboard')
         }
       } else {
-        // Register - with verification code
+        // Register - 邮箱验证已禁用，不再发送验证码
         const response = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -105,7 +106,7 @@ export default function LoginPage() {
             email: formData.email,
             password: formData.password,
             inviteCode: formData.inviteCode,
-            verificationCode: formData.verificationCode,
+            // verificationCode: formData.verificationCode, // 已禁用
           }),
         })
 
@@ -164,7 +165,6 @@ export default function LoginPage() {
                 setIsLogin(true)
                 setError('')
                 setSuccessMessage('')
-                setCountdown(0)
               }}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                 isLogin
@@ -180,7 +180,6 @@ export default function LoginPage() {
                 setIsLogin(false)
                 setError('')
                 setSuccessMessage('')
-                setCountdown(0)
               }}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                 !isLogin
@@ -209,7 +208,8 @@ export default function LoginPage() {
               />
             </div>
 
-            {!isLogin && (
+            {/* 邮箱验证功能已暂时禁用 */}
+            {/* {!isLogin && (
               <div>
                 <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 mb-2">
                   Email Verification Code
@@ -236,21 +236,22 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
-            )}
+            )} */}
 
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                {isLogin && (
+                {/* 忘记密码功能已暂时禁用 */}
+                {/* {isLogin && (
                   <Link
                     href="/forgot-password"
                     className="text-sm text-purple-600 hover:text-purple-700 font-medium"
                   >
                     Forgot Password?
                   </Link>
-                )}
+                )} */}
               </div>
               <input
                 id="password"
@@ -313,7 +314,6 @@ export default function LoginPage() {
                     setIsLogin(false)
                     setError('')
                     setSuccessMessage('')
-                    setCountdown(0)
                   }}
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
@@ -329,7 +329,6 @@ export default function LoginPage() {
                     setIsLogin(true)
                     setError('')
                     setSuccessMessage('')
-                    setCountdown(0)
                   }}
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >

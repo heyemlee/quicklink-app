@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
-    const { email, password, inviteCode, verificationCode } = await request.json()
+    const { email, password, inviteCode } = await request.json()
 
     // 验证邀请码
     const validInviteCode = process.env.REGISTRATION_INVITE_CODE
@@ -47,93 +47,39 @@ export async function POST(request: Request) {
       }
     })
 
-    if (existingUser && existingUser.emailVerified) {
+    if (existingUser) {
       return NextResponse.json(
         { error: '该邮箱已被注册' },
         { status: 422 }
       )
     }
 
-    // 验证码是必须的
-    if (!verificationCode) {
-      return NextResponse.json(
-        { error: '请输入验证码' },
-        { status: 422 }
-      );
-    }
-
-    // 验证用户必须存在（通过发送验证码创建）
-    if (!existingUser) {
-      return NextResponse.json(
-        { error: '请先发送验证码' },
-        { status: 422 }
-      );
-    }
-
-    // 验证码验证
-    const validToken = await prisma.verificationToken.findFirst({
-      where: {
-        userId: existingUser.id,
-        token: verificationCode,
-        type: 'email_verification',
-        expiresAt: {
-          gt: new Date(),
-        },
-      },
-    });
-
-    if (!validToken) {
-      return NextResponse.json(
-        { error: '验证码无效或已过期' },
-        { status: 422 }
-      );
-    }
-
-    // 删除已使用的验证码
-    await prisma.verificationToken.delete({
-      where: { id: validToken.id },
-    });
-
-    // 更新用户信息
+    // ===== 邮箱验证功能已禁用 =====
+    // 不再需要验证码，直接创建用户
+    
+    // 创建新用户
     const hashedPassword = await hashPassword(password)
     const slug = generateSlug(email)
 
-    let user;
-    if (existingUser.profile) {
-      // 更新现有用户（临时用户）
-      user = await prisma.user.update({
-        where: { id: existingUser.id },
-        data: {
-          password: hashedPassword,
-          slug,
-          emailVerified: true,
-        },
-        include: {
-          profile: true
-        }
-      });
-    } else {
-      // 更新用户并创建profile
-      user = await prisma.user.update({
-        where: { id: existingUser.id },
-        data: {
-          password: hashedPassword,
-          slug,
-          emailVerified: true,
-          profile: {
-            create: {
-              companyName: 'Company Name',
-              showContact: true,
-              showFollow: true,
-              showReview: true,
-            }
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        slug,
+        emailVerified: true, // 直接设置为已验证
+        profile: {
+          create: {
+            companyName: 'Company Name',
+            showContact: true,
+            showFollow: true,
+            showReview: true,
           }
-        },
-        include: {
-          profile: true
         }
-      });
-    }
+      },
+      include: {
+        profile: true
+      }
+    })
 
     return NextResponse.json(
       { 
