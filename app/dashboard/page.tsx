@@ -719,13 +719,22 @@ export default function DashboardPage() {
                             <div key={item.date} className="flex-1 flex flex-col items-center gap-2">
                               <div className="relative w-full">
                                 <div 
-                                  className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all hover:from-blue-600 hover:to-blue-500 cursor-pointer"
-                                  style={{ height: `${Math.max(height, 5)}%`, minHeight: '20px' }}
+                                  className={`w-full rounded-t-lg transition-all cursor-pointer ${
+                                    item.count > 0 
+                                      ? 'bg-gradient-to-t from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500' 
+                                      : 'bg-gray-200'
+                                  }`}
+                                  style={{ 
+                                    height: item.count > 0 ? `${Math.max(height, 8)}%` : '4px',
+                                    minHeight: item.count > 0 ? '20px' : '4px'
+                                  }}
                                   title={`${fullDateLabel}: ${item.count} views`}
                                 >
-                                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-gray-700">
-                                    {item.count}
-                                  </div>
+                                  {item.count > 0 && (
+                                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-gray-700">
+                                      {item.count}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                               <div className="text-xs text-gray-600 text-center leading-tight">
@@ -743,16 +752,18 @@ export default function DashboardPage() {
                       <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                         <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
                         24-Hour Activity Heatmap
+                        <span className="text-xs text-gray-500 font-normal ml-1">(Los Angeles Time)</span>
                       </h4>
                       <div className="grid grid-cols-12 gap-1">
                         {analyticsData.trends.hourly.map((hourData: HourlyItem) => {
                           const maxCount = Math.max(...analyticsData.trends.hourly.map((h: HourlyItem) => h.count), 1)
-                          const intensity = hourData.count / maxCount
+                          const intensity = hourData.count > 0 ? hourData.count / maxCount : 0
+                          const hourDisplay = String(hourData.hour).padStart(2, '0')
                           return (
                             <div 
                               key={hourData.hour}
                               className="flex flex-col items-center gap-1"
-                              title={`${hourData.hour}:00 - ${hourData.count} views`}
+                              title={`${hourDisplay}:00 (LA Time) - ${hourData.count} views`}
                             >
                               <div 
                                 className={`w-full h-12 rounded transition-colors cursor-pointer ${
@@ -762,12 +773,12 @@ export default function DashboardPage() {
                                   'bg-gray-100'
                                 }`}
                               ></div>
-                              <span className="text-xs text-gray-600">{hourData.hour}</span>
+                              <span className="text-[10px] text-gray-600 font-medium">{hourDisplay}</span>
                             </div>
                           )
                         })}
                       </div>
-                      <p className="text-xs text-gray-500 mt-3 text-center">Darker colors indicate higher activity during that hour</p>
+                      <p className="text-xs text-gray-500 mt-3 text-center">Darker colors indicate higher activity during that hour (Pacific Time)</p>
                     </div>
 
                     {/* Recent Activities */}

@@ -226,10 +226,18 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 时段分布（按小时统计）
+    // 时段分布（按小时统计）- 使用洛杉矶时区（美西时间）
     const hourlyDistribution = Array.from({ length: 24 }, (_, hour) => {
       const count = analytics.filter(a => {
-        return a.createdAt.getHours() === hour
+        // 将UTC时间转换为洛杉矶时区
+        const laHour = parseInt(
+          new Date(a.createdAt).toLocaleString('en-US', {
+            hour: 'numeric',
+            hour12: false,
+            timeZone: 'America/Los_Angeles'
+          })
+        )
+        return laHour === hour
       }).length
       return { hour, count }
     })
