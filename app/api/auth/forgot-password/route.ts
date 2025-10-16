@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { validateEmail } from '@/lib/validation';
 import { sendPasswordResetEmail, generateToken } from '@/lib/email';
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 /**
  * 请求密码重置
  * POST /api/auth/forgot-password

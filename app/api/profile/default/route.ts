@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 // 获取默认用户的 Profile（公开访问，用于主页）
 export async function GET() {
   try {

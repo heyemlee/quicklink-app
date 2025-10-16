@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth-options'
 import prisma from '@/lib/prisma'
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 // 类型定义
 interface PlatformClick {
   platform: string

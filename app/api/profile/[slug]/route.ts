@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 interface RouteParams {
   params: {
     slug: string

@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 /**
  * 健康检查端点
  * 用于监控系统和负载均衡器检查

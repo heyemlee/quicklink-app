@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { validateEmail } from '@/lib/validation';
 import { sendVerificationEmail, generateVerificationCode } from '@/lib/email';
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 /**
  * 发送邮箱验证码
  * POST /api/auth/send-verification

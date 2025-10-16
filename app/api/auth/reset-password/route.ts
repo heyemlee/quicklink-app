@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { validatePassword } from '@/lib/validation';
 import { hashPassword } from '@/lib/auth';
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 /**
  * 重置密码
  * POST /api/auth/reset-password

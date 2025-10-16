@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma'
 import { hashPassword, generateSlug } from '@/lib/auth'
 import { validateEmail, validatePassword } from '@/lib/validation'
 
+// 强制动态渲染
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   try {
     const { email, password, inviteCode, verificationCode } = await request.json()
