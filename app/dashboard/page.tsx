@@ -695,15 +695,24 @@ export default function DashboardPage() {
                           
                           // Format label based on view mode
                           let label = ''
+                          let sublabel = ''
+                          let fullDateLabel = ''
                           if (viewMode === 'all') {
                             // Show month name for all-time view
                             const [year, month] = item.date.split('-')
                             const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleString('en-US', { month: 'short' })
-                            label = `${monthName} ${year.slice(2)}`
+                            label = `${monthName}`
+                            sublabel = `'${year.slice(2)}`
+                            fullDateLabel = new Date(parseInt(year), parseInt(month) - 1).toLocaleString('en-US', { month: 'long', year: 'numeric' })
                           } else {
-                            // Show day for monthly view
-                            const date = new Date(item.date)
-                            label = `${date.getMonth() + 1}/${date.getDate()}`
+                            // Show day for monthly view with weekday
+                            const date = new Date(item.date + 'T00:00:00')
+                            const month = date.getMonth() + 1
+                            const day = date.getDate()
+                            const weekday = date.toLocaleString('en-US', { weekday: 'short' })
+                            label = `${month}/${day}`
+                            sublabel = weekday
+                            fullDateLabel = `${weekday}, ${date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
                           }
                           
                           return (
@@ -712,15 +721,16 @@ export default function DashboardPage() {
                                 <div 
                                   className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all hover:from-blue-600 hover:to-blue-500 cursor-pointer"
                                   style={{ height: `${Math.max(height, 5)}%`, minHeight: '20px' }}
-                                  title={`${item.count} views`}
+                                  title={`${fullDateLabel}: ${item.count} views`}
                                 >
                                   <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-gray-700">
                                     {item.count}
                                   </div>
                                 </div>
                               </div>
-                              <div className="text-xs text-gray-600 text-center">
-                                {label}
+                              <div className="text-xs text-gray-600 text-center leading-tight">
+                                <div className="font-medium">{label}</div>
+                                <div className="text-[10px] text-gray-500">{sublabel}</div>
                               </div>
                             </div>
                           )

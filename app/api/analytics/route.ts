@@ -117,12 +117,23 @@ export async function GET(request: NextRequest) {
       endDate = new Date()
       periodLabel = 'All Time'
     } else if (year && month) {
-      // Specific month
+      // Specific month - show data up to today
       const y = parseInt(year)
       const m = parseInt(month)
-      startDate = new Date(y, m - 1, 1)
-      endDate = new Date(y, m, 0, 23, 59, 59, 999)
-      periodLabel = new Date(y, m - 1).toLocaleString('en-US', { month: 'long', year: 'numeric' })
+      const today = new Date()
+      const monthStart = new Date(y, m - 1, 1)
+      const monthEnd = new Date(y, m, 0, 23, 59, 59, 999)
+      
+      startDate = monthStart
+      // If current month, use today; otherwise use month end
+      if (y === today.getFullYear() && m === today.getMonth() + 1) {
+        endDate = today
+        // Format: "October 1-16, 2025"
+        periodLabel = `${monthStart.toLocaleString('en-US', { month: 'long' })} ${monthStart.getDate()}-${today.getDate()}, ${y}`
+      } else {
+        endDate = monthEnd
+        periodLabel = new Date(y, m - 1).toLocaleString('en-US', { month: 'long', year: 'numeric' })
+      }
     } else if (year) {
       // Specific year
       const y = parseInt(year)
@@ -195,17 +206,22 @@ export async function GET(request: NextRequest) {
         .slice(-12) // Last 12 months
         .map(([date, count]) => ({ date, count }))
     } else {
-      // Month view: show daily trend (last 7 days or days in month)
-      const daysInRange = Math.min(7, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
+      // Month view: show daily trend for last 7 days (including today)
+      const today = new Date()
+      today.setHours(23, 59, 59, 999) // End of today
       
-      dailyViews = Array.from({ length: daysInRange }, (_, i) => {
-        const date = new Date(endDate)
-        date.setDate(date.getDate() - (daysInRange - 1 - i))
+      dailyViews = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(today)
+        date.setDate(date.getDate() - (6 - i)) // 6 days ago to today
+        date.setHours(0, 0, 0, 0) // Start of day
+        
         const dateStr = date.toISOString().split('T')[0]
         const count = analytics.filter(a => {
-          const aDate = a.createdAt.toISOString().split('T')[0]
-          return aDate === dateStr && a.eventType === 'page_view'
+          const aDate = new Date(a.createdAt)
+          aDate.setHours(0, 0, 0, 0)
+          return aDate.toISOString().split('T')[0] === dateStr && a.eventType === 'page_view'
         }).length
+        
         return { date: dateStr, count }
       })
     }
