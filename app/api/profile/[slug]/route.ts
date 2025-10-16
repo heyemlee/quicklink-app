@@ -48,6 +48,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     return NextResponse.json({
       profile: {
         companyName: user.profile.companyName,
+        companySubtitle: user.profile.companySubtitle,
         phone: user.profile.phone,
         address: user.profile.address,
         email: user.profile.email,
@@ -81,6 +82,14 @@ export async function GET(request: Request, { params }: RouteParams) {
         // 平台显示控制
         followPlatforms: followPlatforms,
         reviewPlatforms: reviewPlatforms,
+        
+        // ContactInfo配置
+        contactInfoName: user.profile.contactInfoName,
+        contactInfoPhone: user.profile.contactInfoPhone,
+        contactInfoEmail: user.profile.contactInfoEmail,
+        contactInfoAddress: user.profile.contactInfoAddress,
+        contactInfoWebsite: user.profile.contactInfoWebsite,
+        contactInfoOrganization: user.profile.contactInfoOrganization,
       }
     })
   } catch (error) {

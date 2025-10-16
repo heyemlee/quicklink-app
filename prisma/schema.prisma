@@ -23,6 +23,7 @@ model User {
   profile              Profile?
   verificationTokens   VerificationToken[]
   passwordResets       PasswordReset[]
+  analytics            Analytics[]
 }
 
 model Profile {
@@ -31,13 +32,14 @@ model Profile {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   // 基本信息
-  companyName   String   @default("我的公司")
-  logoUrl       String?
-  websiteName   String?
-  websiteUrl    String?
-  phone         String?
-  address       String?
-  email         String?
+  companyName      String   @default("我的公司")
+  companySubtitle  String?
+  logoUrl          String?
+  websiteName      String?
+  websiteUrl       String?
+  phone            String?
+  address          String?
+  email            String?
   
   // 社交媒体链接
   wechatId      String?
@@ -111,4 +113,28 @@ model PasswordReset {
   @@index([userId])
   @@index([token])
   @@index([expiresAt])
+}
+
+// 数据统计模型 - 每个用户的数据完全隔离
+model Analytics {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // 事件类型: 'page_view', 'save_contact', 'platform_click'
+  eventType    String
+  
+  // 平台信息（仅当eventType为platform_click时使用）
+  platform     String?  // 'wechat', 'instagram', 'facebook', etc.
+  platformType String?  // 'follow' 或 'review'
+  
+  // 访客标识（用于统计独立访客，可选）
+  visitorId    String?
+  
+  createdAt    DateTime @default(now())
+  
+  // 索引优化：按用户和时间查询
+  @@index([userId, createdAt])
+  @@index([userId, eventType])
+  @@index([eventType])
 }

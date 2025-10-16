@@ -7,18 +7,20 @@ async function main() {
   console.log('🌱 开始种子数据...')
 
   // 创建测试用户
-  const hashedPassword = await bcrypt.hash('password123', 12)
+  const hashedPassword = await bcrypt.hash('123456', 12)
 
   const user = await prisma.user.upsert({
-    where: { email: 'test@example.com' },
+    where: { email: 'test@gmail.com' },
     update: {},
     create: {
-      email: 'test@example.com',
+      email: 'test@gmail.com',
       password: hashedPassword,
       slug: 'test-demo',
+      emailVerified: true,
       profile: {
         create: {
           companyName: 'KABi Design',
+          companySubtitle: 'Kitchen and Bath Institute',
           logoUrl: '/icons/kabi.png',
           phone: '(669) 298-1888',
           address: '1754 Junction Ave, San Jose',
@@ -43,6 +45,10 @@ async function main() {
           showContact: true,
           showFollow: true,
           showReview: true,
+          
+          // 平台设置
+          followPlatforms: JSON.stringify(['website', 'instagram', 'facebook', 'wechat', 'tiktok']),
+          reviewPlatforms: JSON.stringify(['googlemap', 'yelp', 'xiaohongshu', 'instagram']),
         }
       }
     },
@@ -52,8 +58,8 @@ async function main() {
   })
 
   console.log('✅ 测试用户创建成功')
-  console.log('📧 邮箱: test@example.com')
-  console.log('🔑 密码: password123')
+  console.log('📧 邮箱: test@gmail.com')
+  console.log('🔑 密码: 123456')
   console.log('🔗 名片链接: http://localhost:3000/card/test-demo')
   console.log('')
   console.log('用户 ID:', user.id)

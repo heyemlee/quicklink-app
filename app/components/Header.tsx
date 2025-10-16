@@ -2,14 +2,15 @@ import React from 'react';
 
 interface HeaderProps {
   companyName?: string;
+  companySubtitle?: string | null;
   phone?: string | null;
   address?: string | null;
 }
 
-const Header = ({ companyName, phone, address }: HeaderProps) => {
+const Header = ({ companyName, companySubtitle, phone, address }: HeaderProps) => {
   // Use default values if not provided
   const displayName = companyName || "KABi";
-  const displaySubtitle = companyName && companyName !== "KABi" ? "" : "Kitchen and Bath Institute";
+  const displaySubtitle = companySubtitle;
   const displayPhone = phone || "(669) 298-1888";
   const displayAddress = address || "1754 Junction Ave, San Jose";
   

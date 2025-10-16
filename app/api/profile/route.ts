@@ -66,6 +66,7 @@ export async function PUT(request: Request) {
     const updateData = {
       // 基本信息
       companyName: data.companyName,
+      companySubtitle: data.companySubtitle,
       phone: data.phone,
       address: data.address,
       email: data.email,

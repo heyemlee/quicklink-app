@@ -5,6 +5,7 @@ import { useHapticFeedback } from "@/app/hooks/useHapticFeedback";
 import { useNetworkStatus } from "@/app/hooks/useNetworkStatus";
 import { useReviewGenerator } from "@/app/hooks/useReviewGenerator";
 import { useAppOpener } from "@/app/hooks/useAppOpener";
+import { useAnalytics } from "@/app/hooks/useAnalytics";
 import { copyToClipboard } from "@/app/utils/clipboard";
 import Header from "@/app/components/Header";
 import SaveContactButton from "@/app/components/SaveContactButton";
@@ -16,6 +17,7 @@ import { followPlatforms as allFollowPlatforms, reviewPlatforms as allReviewPlat
 
 interface Profile {
   companyName: string;
+  companySubtitle?: string | null;
   phone?: string | null;
   email?: string | null;
   address?: string | null;
@@ -68,6 +70,7 @@ export default function CardPage() {
   const { isOnline, showOfflineWarning } = useNetworkStatus();
   const { reviewText, isLoading: reviewLoading, generateReview } = useReviewGenerator();
   const { openApp } = useAppOpener();
+  const { trackSaveContact, trackPlatformClick } = useAnalytics(slug);
 
   // Fetch profile data
   useEffect(() => {
@@ -149,6 +152,9 @@ export default function CardPage() {
     setIsModalOpen(true);
     setCopySuccess(false);
     
+    // 追踪评价平台点击
+    trackPlatformClick(platform.id, 'review');
+    
     buttonClickTimeout.current = setTimeout(() => {
       buttonClickTimeout.current = null;
     }, 500);
@@ -194,6 +200,9 @@ export default function CardPage() {
   const handleFollowClick = async (platform: PlatformConfig) => {
     triggerHaptic('medium');
     
+    // 追踪关注平台点击
+    trackPlatformClick(platform.id, 'follow');
+    
     if (platform.id === "wechat" && profile?.wechatId) {
       const success = await copyToClipboard(profile.wechatId);
       if (success) {
@@ -212,6 +221,9 @@ export default function CardPage() {
   const handleSaveContact = () => {
     if (!contactInfo || !profile) return;
     triggerHaptic('medium');
+    
+    // 追踪保存联系人
+    trackSaveContact();
     
     // Generate vCard
     const saveContact = (contact: ContactInfo) => {
@@ -319,6 +331,7 @@ END:VCARD`;
         {/* Header */}
         <Header 
           companyName={profile?.companyName}
+          companySubtitle={profile?.companySubtitle}
           phone={profile?.phone}
           address={profile?.address}
         />
