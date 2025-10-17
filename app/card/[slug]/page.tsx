@@ -107,7 +107,7 @@ export default function CardPage() {
 
   // Build contact info from profile - use contactInfo fields if available, fallback to basic profile fields
   const contactInfo: ContactInfo | null = profile ? {
-    name: profile.contactInfoName || profile.companyName,
+    name: profile.contactInfoName || '',
     phone: profile.contactInfoPhone || profile.phone,
     email: profile.contactInfoEmail || profile.email,
     address: profile.contactInfoAddress || profile.address,
