@@ -227,9 +227,27 @@ export default function CardPage() {
     
     // Generate vCard
     const saveContact = (contact: ContactInfo) => {
+      // Parse name into first and last name
+      const fullName = contact.name || '';
+      let lastName = '';
+      let firstName = '';
+      
+      if (fullName.trim()) {
+        const nameParts = fullName.trim().split(/\s+/);
+        if (nameParts.length === 1) {
+          // Single name, treat as last name
+          lastName = nameParts[0];
+        } else {
+          // Multiple parts: last part is last name, rest is first name
+          lastName = nameParts[nameParts.length - 1];
+          firstName = nameParts.slice(0, -1).join(' ');
+        }
+      }
+      
       const vcard = `BEGIN:VCARD
 VERSION:3.0
-FN:${contact.name || ''}
+N:${lastName};${firstName};;;
+FN:${fullName}
 ${profile.contactInfoOrganization ? `ORG:${profile.contactInfoOrganization}` : ''}
 TEL:${contact.phone || ''}
 EMAIL:${contact.email || ''}
