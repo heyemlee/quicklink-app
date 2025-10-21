@@ -57,8 +57,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/company-logo.png",
     isImage: true,
     color: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
-    appScheme: "https://www.la-kabi.com/",
-    fallbackUrl: "https://www.la-kabi.com/",
+    appScheme: "https://www.google.com/",
+    fallbackUrl: "https://www.google.com/",
   },
   {
     id: "tiktok",
@@ -67,7 +67,7 @@ export const followPlatforms: PlatformConfig[] = [
     isImage: true,
     color: "bg-black",
     appScheme: "snssdk1233://user/profile/YOUR_USER_ID",
-    fallbackUrl: "https://www.tiktok.com/@kabi.cabinet?_t=ZT-90MOSFyVCrV&_r=1",
+    fallbackUrl: "https://www.tiktok.com/",
   },
   {
     id: "instagram",
@@ -76,7 +76,7 @@ export const followPlatforms: PlatformConfig[] = [
     isImage: true,
     color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500",
     appScheme: "instagram://user?username=YOUR_HANDLE",
-    fallbackUrl: "https://www.instagram.com/kabidesign?igsh=NTc4MTIwNjQ2YQ%3D%3D&utm_source=qr",
+    fallbackUrl: "https://www.instagram.com/",
   },
   {
     id: "facebook",
@@ -85,7 +85,7 @@ export const followPlatforms: PlatformConfig[] = [
     isImage: true,
     color: "bg-blue-600",
     appScheme: "fb://profile/YOUR_PAGE_ID",
-    fallbackUrl: "https://www.facebook.com/profile.php?id=61576815081257&mibextid=wwXIfr",
+    fallbackUrl: "https://www.facebook.com/",
   },
   {
     id: "wechat",
@@ -103,7 +103,7 @@ export const followPlatforms: PlatformConfig[] = [
     isImage: true,
     color: "bg-red-500",
     appScheme: "xhsdiscover://user/64b8123700000000140399ef",
-    fallbackUrl: "https://xhslink.com/m/22MB8xOCPQb",
+    fallbackUrl: "https://xhslink.com/",
   },
 ];
 

@@ -17,7 +17,6 @@ export const WeChatToast = ({ show }: ToastProps) => {
         </div>
         <div className="text-sm font-medium">
           <div className="font-bold">WeChat ID Copied!</div>
-          <div className="text-xs opacity-90">KABI-Design</div>
         </div>
       </div>
     </div>

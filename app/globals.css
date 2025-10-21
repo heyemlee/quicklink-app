@@ -67,11 +67,11 @@ a, button {
 
 @keyframes slideUp {
   from {
-    transform: translateY(20px);
+    transform: translate(-50%, 20px);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translate(-50%, 0);
     opacity: 1;
   }
 }
