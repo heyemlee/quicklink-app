@@ -88,9 +88,6 @@ export async function PUT(request: Request) {
       // 评价平台链接
       googleReviewUrl: data.googleReviewUrl,
       yelpReviewUrl: data.yelpReviewUrl,
-      facebookReviewUrl: data.facebookReviewUrl,
-      xiaohongshuReviewUrl: data.xiaohongshuReviewUrl,
-      instagramReviewUrl: data.instagramReviewUrl,
       
       // 配色方案
       primaryColor: data.primaryColor,

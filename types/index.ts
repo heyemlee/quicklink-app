@@ -37,7 +37,6 @@ export interface ProfileFormData {
   google?: string | null;
   googleReviewUrl?: string | null;
   yelpReviewUrl?: string | null;
-  facebookReviewUrl?: string | null;
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;

@@ -28,9 +28,6 @@ interface FormData {
   // 评价平台链接
   googleReviewUrl: string;
   yelpReviewUrl: string;
-  facebookReviewUrl: string;
-  xiaohongshuReviewUrl: string;
-  instagramReviewUrl: string;
   
   // 配色方案
   primaryColor: string;
@@ -137,9 +134,6 @@ export default function DashboardPage() {
     // 评价平台链接
     googleReviewUrl: '',
     yelpReviewUrl: '',
-    facebookReviewUrl: '',
-    xiaohongshuReviewUrl: '',
-    instagramReviewUrl: '',
     
     // 配色方案
     primaryColor: '#7c3aed',
@@ -1364,9 +1358,6 @@ export default function DashboardPage() {
                         const reviewLinkFields = [
                           { id: 'googlemap', name: 'googleReviewUrl' as keyof FormData, label: 'Google Review Link', placeholder: 'https://g.page/...' },
                           { id: 'yelp', name: 'yelpReviewUrl' as keyof FormData, label: 'Yelp Review Link', placeholder: 'https://yelp.com/writeareview/biz/...' },
-                          { id: 'facebook', name: 'facebookReviewUrl' as keyof FormData, label: 'Facebook Review Link', placeholder: 'https://facebook.com/...' },
-                          { id: 'xiaohongshu', name: 'xiaohongshuReviewUrl' as keyof FormData, label: 'Xiaohongshu Review Link', placeholder: 'https://xiaohongshu.com/...' },
-                          { id: 'instagram', name: 'instagramReviewUrl' as keyof FormData, label: 'Instagram Review Link', placeholder: 'https://instagram.com/...' },
                         ].filter(field => formData.reviewPlatforms?.includes(field.id));
                         
                         if (reviewLinkFields.length === 0) return null;
