@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { contactInfo } from "./contactConfig";
 import { reviewPlatforms, followPlatforms, PlatformConfig } from "./config/platformsConfig";
 import { useHapticFeedback } from "./hooks/useHapticFeedback";
 import { useNetworkStatus } from "./hooks/useNetworkStatus";
@@ -17,16 +16,45 @@ import { WeChatToast, OfflineToast, OfflineIndicator } from "./components/Toast"
 
 interface Profile {
   companyName: string;
+  companySubtitle?: string | null;
   phone?: string | null;
   address?: string | null;
+  email?: string | null;
+  wechatId?: string | null;
+  // Social media links
+  websiteName?: string | null;
+  websiteUrl?: string | null;
+  tiktok?: string | null;
+  instagram?: string | null;
+  xiaohongshu?: string | null;
+  facebook?: string | null;
+  // Review platform links
+  googleReviewUrl?: string | null;
+  yelpReviewUrl?: string | null;
+  // Colors
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
+  // Display settings
+  showContact: boolean;
+  showFollow: boolean;
+  showReview: boolean;
+  // Platform control
+  followPlatforms: string[];
+  reviewPlatforms: string[];
+  // ContactInfo fields
+  contactInfoName?: string | null;
+  contactInfoPhone?: string | null;
+  contactInfoEmail?: string | null;
+  contactInfoAddress?: string | null;
+  contactInfoWebsite?: string | null;
+  contactInfoOrganization?: string | null;
 }
 
 const App = () => {
   // State management
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedPlatform, setSelectedPlatform] = useState<PlatformConfig | null>(null);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
@@ -54,6 +82,8 @@ const App = () => {
         }
       } catch (error) {
         console.error('获取配置失败:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -62,12 +92,14 @@ const App = () => {
 
   // Page loaded effect
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 800);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    if (!loading) {
+      const timer = setTimeout(() => {
+        setPageLoading(false);
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   // Handle review platform click
   const handlePlatformClick = async (platform: PlatformConfig) => {
@@ -131,8 +163,8 @@ const App = () => {
     triggerHaptic('medium');
     
     // Special handling for WeChat - copy ID first
-    if (platform.id === "wechat") {
-      const success = await copyToClipboard("KABI-Design");
+    if (platform.id === "wechat" && profile?.wechatId) {
+      const success = await copyToClipboard(profile.wechatId);
       if (success) {
         setWechatCopied(true);
         triggerHaptic('success');
@@ -148,8 +180,21 @@ const App = () => {
 
   // Handle save contact
   const handleSaveContact = () => {
+    if (!profile) return;
+    
     triggerHaptic('medium');
-    saveContact(contactInfo);
+    
+    // Build contact info from profile
+    const contact = {
+      name: profile.contactInfoName || profile.companyName || '',
+      phone: profile.contactInfoPhone || profile.phone || '',
+      email: profile.contactInfoEmail || profile.email || '',
+      address: profile.contactInfoAddress || profile.address || '',
+      website: profile.contactInfoWebsite || '',
+      organization: profile.contactInfoOrganization || profile.companyName || '',
+    };
+    
+    saveContact(contact);
     triggerHaptic('success');
   };
 
@@ -169,6 +214,77 @@ const App = () => {
       setIsModalOpen(false);
     }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">加载中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Build dynamic platform lists from profile
+  const dynamicFollowPlatforms: PlatformConfig[] = profile && profile.followPlatforms ? 
+    followPlatforms
+      .filter(platform => profile.followPlatforms.includes(platform.id))
+      .map(platform => {
+        if (platform.id === 'wechat' && profile.wechatId) {
+          return { ...platform, badge: profile.wechatId } as PlatformConfig & { badge: string }
+        }
+        if (platform.id === 'website') {
+          const customPlatform = { ...platform }
+          if (profile.websiteName) customPlatform.name = profile.websiteName
+          if (profile.websiteUrl) {
+            customPlatform.appScheme = profile.websiteUrl
+            customPlatform.fallbackUrl = profile.websiteUrl
+          }
+          return customPlatform
+        }
+        if (platform.id === 'tiktok' && profile.tiktok) {
+          return profile.tiktok.startsWith('http') 
+            ? { ...platform, appScheme: profile.tiktok, fallbackUrl: profile.tiktok }
+            : { ...platform, fallbackUrl: profile.tiktok }
+        }
+        if (platform.id === 'instagram' && profile.instagram) {
+          return profile.instagram.startsWith('http')
+            ? { ...platform, appScheme: profile.instagram, fallbackUrl: profile.instagram }
+            : { ...platform, fallbackUrl: profile.instagram }
+        }
+        if (platform.id === 'xiaohongshu' && profile.xiaohongshu) {
+          return profile.xiaohongshu.startsWith('http')
+            ? { ...platform, appScheme: profile.xiaohongshu, fallbackUrl: profile.xiaohongshu }
+            : { ...platform, fallbackUrl: profile.xiaohongshu }
+        }
+        if (platform.id === 'facebook' && profile.facebook) {
+          return profile.facebook.startsWith('http')
+            ? { ...platform, appScheme: profile.facebook, fallbackUrl: profile.facebook }
+            : { ...platform, fallbackUrl: profile.facebook }
+        }
+        return platform
+      })
+    : [];
+
+  const dynamicReviewPlatforms: PlatformConfig[] = profile && profile.reviewPlatforms ? 
+    reviewPlatforms
+      .filter(platform => profile.reviewPlatforms.includes(platform.id))
+      .map(platform => {
+        if (platform.id === 'googlemap' && profile.googleReviewUrl) {
+          return profile.googleReviewUrl.startsWith('http')
+            ? { ...platform, appScheme: profile.googleReviewUrl, fallbackUrl: profile.googleReviewUrl }
+            : { ...platform, fallbackUrl: profile.googleReviewUrl }
+        }
+        if (platform.id === 'yelp' && profile.yelpReviewUrl) {
+          return profile.yelpReviewUrl.startsWith('http')
+            ? { ...platform, appScheme: profile.yelpReviewUrl, fallbackUrl: profile.yelpReviewUrl }
+            : { ...platform, fallbackUrl: profile.yelpReviewUrl }
+        }
+        return platform
+      })
+    : [];
 
   // Apply custom colors from profile
   const customStyles = profile ? `
@@ -206,6 +322,7 @@ const App = () => {
       {/* Header */}
       <Header 
         companyName={profile?.companyName}
+        companySubtitle={profile?.companySubtitle}
         phone={profile?.phone}
         address={profile?.address}
       />
@@ -213,19 +330,25 @@ const App = () => {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-20">
         {/* Save Contact Section */}
-        <SaveContactButton onClick={handleSaveContact} />
+        {profile?.showContact && (
+          <SaveContactButton onClick={handleSaveContact} />
+        )}
 
         {/* Follow Us Section */}
-        <FollowSection 
-          platforms={followPlatforms} 
-          onPlatformClick={handleFollowClick} 
-        />
+        {profile?.showFollow && dynamicFollowPlatforms.length > 0 && (
+          <FollowSection 
+            platforms={dynamicFollowPlatforms} 
+            onPlatformClick={handleFollowClick} 
+          />
+        )}
 
         {/* Write Reviews Section */}
-        <ReviewSection 
-          platforms={reviewPlatforms} 
-          onPlatformClick={handlePlatformClick} 
-        />
+        {profile?.showReview && dynamicReviewPlatforms.length > 0 && (
+          <ReviewSection 
+            platforms={dynamicReviewPlatforms} 
+            onPlatformClick={handlePlatformClick} 
+          />
+        )}
       </main>
 
       {/* Review Modal */}

@@ -16,9 +16,8 @@ export const reviewPlatforms: PlatformConfig[] = [
     icon: "/icons/yelp.png",
     isImage: true,
     color: "bg-red-600",
-    appScheme: "yelp:///write_review",
-    fallbackUrl:
-      "https://www.yelp.com/writeareview/biz/-YfNM7V52zpRuA9_DqBeUA?return_url=%2Fbiz%2F-YfNM7V52zpRuA9_DqBeUA&review_origin=biz-details-war-button",
+    appScheme: "https://www.yelp.com/writeareview/biz/-YfNM7V52zpRuA9_DqBeUA",
+    fallbackUrl:"https://www.yelp.com/writeareview/biz/-YfNM7V52zpRuA9_DqBeUA",
   },
   {
     id: "googlemap",
@@ -26,7 +25,7 @@ export const reviewPlatforms: PlatformConfig[] = [
     icon: "/icons/google.png",
     isImage: true,
     color: "bg-blue-500",
-    appScheme: "comgooglemaps://?q=YourBusinessName&center=40.7484,-73.9857",
+    appScheme: "https://g.page/r/CffWB10nyKpfEAE/review",
     fallbackUrl: "https://g.page/r/CffWB10nyKpfEAE/review",
   },
 ];
@@ -39,8 +38,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/company-logo.png",
     isImage: true,
     color: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
-    appScheme: "https://www.google.com/",
-    fallbackUrl: "https://www.google.com/",
+    appScheme: "https://la-kabi.com/",
+    fallbackUrl: "https://la-kabi.com/",
   },
   {
     id: "tiktok",
@@ -48,8 +47,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/tiktok.png",
     isImage: true,
     color: "bg-black",
-    appScheme: "snssdk1233://user/profile/YOUR_USER_ID",
-    fallbackUrl: "https://www.tiktok.com/@YOUR_USERNAME",
+    appScheme: "https://www.tiktok.com/@kabi.cabinet?_t=ZP-90ibyFgb1fK&_r=1",
+    fallbackUrl: "https://www.tiktok.com/@kabi.cabinet?_t=ZP-90ibyFgb1fK&_r=1",
   },
   {
     id: "instagram",
@@ -57,8 +56,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/instagram.png",
     isImage: true,
     color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500",
-    appScheme: "instagram://user?username=YOUR_HANDLE",
-    fallbackUrl: "https://www.instagram.com/",
+    appScheme: "https://www.instagram.com/kabidesign?igsh=NTc4MTIwNjQ2YQ==",
+    fallbackUrl: "https://www.instagram.com/kabidesign?igsh=NTc4MTIwNjQ2YQ==",
   },
   {
     id: "facebook",
@@ -66,8 +65,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/facebook.png",
     isImage: true,
     color: "bg-blue-600",
-    appScheme: "fb://profile/YOUR_PAGE_ID",
-    fallbackUrl: "https://www.facebook.com/",
+    appScheme: "https://www.facebook.com/profile.php?id=61576815081257",
+    fallbackUrl: "https://www.facebook.com/profile.php?id=61576815081257",
   },
   {
     id: "wechat",
@@ -84,8 +83,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/xiaohongshu.png",
     isImage: true,
     color: "bg-red-500",
-    appScheme: "xhsdiscover://user/YOUR_USER_ID",
-    fallbackUrl: "https://www.xiaohongshu.com/user/profile/YOUR_USER_ID",
+    appScheme: "https://xhslink.com/m/6br4JuyIvNP",
+    fallbackUrl: "https://xhslink.com/m/6br4JuyIvNP",
   },
 ];
 

@@ -44,6 +44,7 @@ export async function GET() {
     return NextResponse.json({
       profile: {
         companyName: user.profile.companyName,
+        companySubtitle: user.profile.companySubtitle,
         phone: user.profile.phone,
         address: user.profile.address,
         email: user.profile.email,

@@ -8,11 +8,11 @@ interface HeaderProps {
 }
 
 const Header = ({ companyName, companySubtitle, phone, address }: HeaderProps) => {
-  // Use default values if not provided
-  const displayName = companyName || "KABi";
+  // Use provided values, no defaults to avoid hydration mismatch
+  const displayName = companyName || "";
   const displaySubtitle = companySubtitle;
-  const displayPhone = phone || "(669) 298-1888";
-  const displayAddress = address || "1754 Junction Ave, San Jose";
+  const displayPhone = phone || "";
+  const displayAddress = address || "";
   
   // Format phone for tel: link (remove non-digit characters)
   const phoneLink = displayPhone.replace(/\D/g, '');
@@ -26,9 +26,10 @@ const Header = ({ companyName, companySubtitle, phone, address }: HeaderProps) =
         <div className="text-center">
           <div className="mb-4 sm:mb-5 flex flex-col items-center">
             <h1 
-              className="text-4xl sm:text-6xl font-black bg-clip-text text-transparent tracking-tight leading-none mb-1.5"
+              className="text-4xl sm:text-6xl font-black bg-clip-text text-transparent tracking-tight mb-0.5"
               style={{
-                backgroundImage: 'linear-gradient(to right, var(--accent-color), var(--primary-color), var(--secondary-color))'
+                backgroundImage: 'linear-gradient(to right, var(--accent-color), var(--primary-color), var(--secondary-color))',
+                lineHeight: '1.15'
               }}
             >
               {displayName}
@@ -39,22 +40,30 @@ const Header = ({ companyName, companySubtitle, phone, address }: HeaderProps) =
               </p>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-gray-700">
-            <a href={`tel:${phoneLink}`} className="flex items-center gap-2 hover:text-blue-600 transition-colors">
-              <span className="text-lg">📞</span>
-              <span className="text-sm sm:text-base font-medium">{displayPhone}</span>
-            </a>
-            <span className="hidden sm:inline text-gray-300">|</span>
-            <a 
-              href={addressLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-blue-600 transition-colors"
-            >
-              <span className="text-lg">📍</span>
-              <span className="text-sm sm:text-base font-medium">{displayAddress}</span>
-            </a>
-          </div>
+          {(displayPhone || displayAddress) && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-gray-700">
+              {displayPhone && (
+                <a href={`tel:${phoneLink}`} className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+                  <span className="text-lg">📞</span>
+                  <span className="text-sm sm:text-base font-medium">{displayPhone}</span>
+                </a>
+              )}
+              {displayPhone && displayAddress && (
+                <span className="hidden sm:inline text-gray-300">|</span>
+              )}
+              {displayAddress && (
+                <a 
+                  href={addressLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+                >
+                  <span className="text-lg">📍</span>
+                  <span className="text-sm sm:text-base font-medium">{displayAddress}</span>
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>

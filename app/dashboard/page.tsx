@@ -846,7 +846,7 @@ export default function DashboardPage() {
                     name="companySubtitle"
                     value={formData.companySubtitle || ''}
                     onChange={handleChange}
-                    placeholder="e.g., Kitchen and Bath Institute"
+                    placeholder="e.g., Kitchen and Bath te"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                   />
                   <p className="text-xs text-gray-500 mt-1">This will appear below your company name on the card</p>
