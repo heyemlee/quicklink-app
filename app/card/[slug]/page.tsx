@@ -24,6 +24,17 @@ interface Profile {
   websiteName?: string | null;
   websiteUrl?: string | null;
   wechatId?: string | null;
+  // 社交媒体链接
+  tiktok?: string | null;
+  instagram?: string | null;
+  xiaohongshu?: string | null;
+  facebook?: string | null;
+  // 评价平台链接
+  googleReviewUrl?: string | null;
+  yelpReviewUrl?: string | null;
+  facebookReviewUrl?: string | null;
+  xiaohongshuReviewUrl?: string | null;
+  instagramReviewUrl?: string | null;
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
@@ -134,13 +145,77 @@ export default function CardPage() {
           }
           return customPlatform
         }
+        // 如果是 TikTok，使用数据库中的链接
+        if (platform.id === 'tiktok' && profile.tiktok) {
+          return { 
+            ...platform, 
+            appScheme: profile.tiktok,
+            fallbackUrl: profile.tiktok
+          }
+        }
+        // 如果是 Instagram，使用数据库中的链接
+        if (platform.id === 'instagram' && profile.instagram) {
+          return { 
+            ...platform, 
+            appScheme: profile.instagram,
+            fallbackUrl: profile.instagram
+          }
+        }
+        // 如果是小红书，使用数据库中的链接
+        if (platform.id === 'xiaohongshu' && profile.xiaohongshu) {
+          return { 
+            ...platform, 
+            appScheme: profile.xiaohongshu,
+            fallbackUrl: profile.xiaohongshu
+          }
+        }
+        // 如果是 Facebook，使用数据库中的链接
+        if (platform.id === 'facebook' && profile.facebook) {
+          return { 
+            ...platform, 
+            appScheme: profile.facebook,
+            fallbackUrl: profile.facebook
+          }
+        }
         return platform
       })
     : [];
 
   // Build review platforms based on profile settings
   const reviewPlatforms: PlatformConfig[] = profile && profile.reviewPlatforms ? 
-    allReviewPlatforms.filter(platform => profile.reviewPlatforms.includes(platform.id))
+    allReviewPlatforms
+      .filter(platform => profile.reviewPlatforms.includes(platform.id))
+      .map(platform => {
+        // 如果是 Google，使用数据库中的链接
+        if (platform.id === 'googlemap' && profile.googleReviewUrl) {
+          return { 
+            ...platform, 
+            fallbackUrl: profile.googleReviewUrl
+          }
+        }
+        // 如果是 Yelp，使用数据库中的链接
+        if (platform.id === 'yelp' && profile.yelpReviewUrl) {
+          return { 
+            ...platform, 
+            fallbackUrl: profile.yelpReviewUrl
+          }
+        }
+        // 如果是小红书（评价），使用数据库中的链接
+        if (platform.id === 'xiaohongshu' && profile.xiaohongshuReviewUrl) {
+          return { 
+            ...platform, 
+            fallbackUrl: profile.xiaohongshuReviewUrl
+          }
+        }
+        // 如果是 Instagram（评价），使用数据库中的链接
+        if (platform.id === 'instagram' && profile.instagramReviewUrl) {
+          return { 
+            ...platform, 
+            fallbackUrl: profile.instagramReviewUrl
+          }
+        }
+        return platform
+      })
     : [];
 
   // Handle review platform click

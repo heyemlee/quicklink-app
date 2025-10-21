@@ -67,7 +67,7 @@ export const followPlatforms: PlatformConfig[] = [
     isImage: true,
     color: "bg-black",
     appScheme: "snssdk1233://user/profile/YOUR_USER_ID",
-    fallbackUrl: "https://www.tiktok.com/",
+    fallbackUrl: "https://www.tiktok.com/@YOUR_USERNAME",
   },
   {
     id: "instagram",
@@ -102,8 +102,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/xiaohongshu.png",
     isImage: true,
     color: "bg-red-500",
-    appScheme: "xhsdiscover://user/64b8123700000000140399ef",
-    fallbackUrl: "https://xhslink.com/",
+    appScheme: "xhsdiscover://user/YOUR_USER_ID",
+    fallbackUrl: "https://www.xiaohongshu.com/user/profile/YOUR_USER_ID",
   },
 ];
 

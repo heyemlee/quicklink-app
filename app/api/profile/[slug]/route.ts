@@ -71,6 +71,8 @@ export async function GET(request: Request, { params }: RouteParams) {
         googleReviewUrl: user.profile.googleReviewUrl,
         yelpReviewUrl: user.profile.yelpReviewUrl,
         facebookReviewUrl: user.profile.facebookReviewUrl,
+        xiaohongshuReviewUrl: user.profile.xiaohongshuReviewUrl,
+        instagramReviewUrl: user.profile.instagramReviewUrl,
         
         // 配色方案
         primaryColor: user.profile.primaryColor,
