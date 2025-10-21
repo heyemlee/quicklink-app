@@ -233,6 +233,17 @@ export default function DashboardPage() {
     })
   }
 
+  // 处理 URL 字段失去焦点时自动添加 https:// 前缀
+  const handleUrlBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    if (value && !value.match(/^https?:\/\//i)) {
+      setFormData({
+        ...formData,
+        [name]: `https://${value}`
+      })
+    }
+  }
+
   const togglePlatform = (platformId: string, platformType: 'follow' | 'review') => {
     const key = platformType === 'follow' ? 'followPlatforms' : 'reviewPlatforms'
     const currentPlatforms = formData[key] || []
@@ -1113,9 +1124,11 @@ export default function DashboardPage() {
                               name="contactInfoWebsite"
                               value={formData.contactInfoWebsite || ''}
                               onChange={handleChange}
-                              placeholder="https://www.abc.com"
+                              onBlur={handleUrlBlur}
+                              placeholder="www.abc.com 或 https://www.abc.com"
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
                             />
+                            <p className="text-xs text-gray-500 mt-1">系统会自动添加 https:// 前缀</p>
                           </div>
 
                           <div>
@@ -1234,9 +1247,11 @@ export default function DashboardPage() {
                                 name="websiteUrl"
                                 value={formData.websiteUrl || ''}
                                 onChange={handleChange}
-                                placeholder="https://www.example.com"
+                                onBlur={handleUrlBlur}
+                                placeholder="www.example.com 或 https://www.example.com"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
                               />
+                              <p className="text-xs text-gray-500 mt-1">系统会自动添加 https:// 前缀</p>
                             </div>
                           </div>
                         </div>
