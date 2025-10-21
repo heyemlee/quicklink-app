@@ -147,34 +147,47 @@ export default function CardPage() {
         }
         // 如果是 TikTok，使用数据库中的链接
         if (platform.id === 'tiktok' && profile.tiktok) {
-          return { 
-            ...platform, 
-            appScheme: profile.tiktok,
-            fallbackUrl: profile.tiktok
+          const isAppScheme = profile.tiktok.startsWith('snssdk');
+          if (isAppScheme) {
+            return { ...platform, appScheme: profile.tiktok }
+          } else {
+            return { ...platform, fallbackUrl: profile.tiktok }
           }
         }
         // 如果是 Instagram，使用数据库中的链接
         if (platform.id === 'instagram' && profile.instagram) {
-          return { 
-            ...platform, 
-            appScheme: profile.instagram,
-            fallbackUrl: profile.instagram
+          const isAppScheme = profile.instagram.startsWith('instagram://');
+          if (isAppScheme) {
+            return { ...platform, appScheme: profile.instagram }
+          } else {
+            return { ...platform, fallbackUrl: profile.instagram }
           }
         }
         // 如果是小红书，使用数据库中的链接
+        // 检查是否是 app scheme 还是网页链接
         if (platform.id === 'xiaohongshu' && profile.xiaohongshu) {
-          return { 
-            ...platform, 
-            appScheme: profile.xiaohongshu,
-            fallbackUrl: profile.xiaohongshu
+          const isAppScheme = profile.xiaohongshu.startsWith('xhsdiscover://');
+          if (isAppScheme) {
+            // 如果是 app scheme，更新 appScheme（保持 fallbackUrl 为配置文件中的网页版）
+            return { 
+              ...platform, 
+              appScheme: profile.xiaohongshu
+            }
+          } else {
+            // 如果是网页链接，只更新 fallbackUrl
+            return { 
+              ...platform, 
+              fallbackUrl: profile.xiaohongshu
+            }
           }
         }
         // 如果是 Facebook，使用数据库中的链接
         if (platform.id === 'facebook' && profile.facebook) {
-          return { 
-            ...platform, 
-            appScheme: profile.facebook,
-            fallbackUrl: profile.facebook
+          const isAppScheme = profile.facebook.startsWith('fb://');
+          if (isAppScheme) {
+            return { ...platform, appScheme: profile.facebook }
+          } else {
+            return { ...platform, fallbackUrl: profile.facebook }
           }
         }
         return platform
@@ -187,31 +200,44 @@ export default function CardPage() {
       .filter(platform => profile.reviewPlatforms.includes(platform.id))
       .map(platform => {
         // 如果是 Google，使用数据库中的链接
+        // Google Maps 评价链接（g.page）在移动端会自动打开 app
         if (platform.id === 'googlemap' && profile.googleReviewUrl) {
           return { 
             ...platform, 
+            appScheme: profile.googleReviewUrl,
             fallbackUrl: profile.googleReviewUrl
           }
         }
         // 如果是 Yelp，使用数据库中的链接
         if (platform.id === 'yelp' && profile.yelpReviewUrl) {
-          return { 
-            ...platform, 
-            fallbackUrl: profile.yelpReviewUrl
+          const isAppScheme = profile.yelpReviewUrl.startsWith('yelp://');
+          if (isAppScheme) {
+            return { ...platform, appScheme: profile.yelpReviewUrl }
+          } else {
+            // Yelp 网页链接在移动端也会自动打开 app
+            return { 
+              ...platform, 
+              appScheme: profile.yelpReviewUrl,
+              fallbackUrl: profile.yelpReviewUrl
+            }
           }
         }
         // 如果是小红书（评价），使用数据库中的链接
         if (platform.id === 'xiaohongshu' && profile.xiaohongshuReviewUrl) {
-          return { 
-            ...platform, 
-            fallbackUrl: profile.xiaohongshuReviewUrl
+          const isAppScheme = profile.xiaohongshuReviewUrl.startsWith('xhsdiscover://');
+          if (isAppScheme) {
+            return { ...platform, appScheme: profile.xiaohongshuReviewUrl }
+          } else {
+            return { ...platform, fallbackUrl: profile.xiaohongshuReviewUrl }
           }
         }
         // 如果是 Instagram（评价），使用数据库中的链接
         if (platform.id === 'instagram' && profile.instagramReviewUrl) {
-          return { 
-            ...platform, 
-            fallbackUrl: profile.instagramReviewUrl
+          const isAppScheme = profile.instagramReviewUrl.startsWith('instagram://');
+          if (isAppScheme) {
+            return { ...platform, appScheme: profile.instagramReviewUrl }
+          } else {
+            return { ...platform, fallbackUrl: profile.instagramReviewUrl }
           }
         }
         return platform
