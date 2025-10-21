@@ -53,9 +53,6 @@ model Profile {
   // 评价平台链接
   googleReviewUrl     String?
   yelpReviewUrl       String?
-  facebookReviewUrl   String?
-  xiaohongshuReviewUrl String?
-  instagramReviewUrl  String?
   
   // 配色方案
   primaryColor    String   @default("#7c3aed")

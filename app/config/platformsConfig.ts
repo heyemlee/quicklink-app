@@ -29,24 +29,6 @@ export const reviewPlatforms: PlatformConfig[] = [
     appScheme: "comgooglemaps://?q=YourBusinessName&center=40.7484,-73.9857",
     fallbackUrl: "https://g.page/r/CffWB10nyKpfEAE/review",
   },
-  {
-    id: "xiaohongshu",
-    name: "小红书",
-    icon: "/icons/xiaohongshu.png",
-    isImage: true,
-    color: "bg-red-500",
-    appScheme: "xhsdiscover://",
-    fallbackUrl: "https://www.xiaohongshu.com/explore",
-  },
-  {
-    id: "instagram",
-    name: "Instagram",
-    icon: "/icons/instagram.png",
-    isImage: true,
-    color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500",
-    appScheme: "instagram://camera",
-    fallbackUrl: "https://www.instagram.com/create/story",
-  },
 ];
 
 // Platform configurations for following

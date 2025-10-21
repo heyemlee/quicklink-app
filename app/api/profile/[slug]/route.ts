@@ -70,9 +70,6 @@ export async function GET(request: Request, { params }: RouteParams) {
         // 评价平台链接
         googleReviewUrl: user.profile.googleReviewUrl,
         yelpReviewUrl: user.profile.yelpReviewUrl,
-        facebookReviewUrl: user.profile.facebookReviewUrl,
-        xiaohongshuReviewUrl: user.profile.xiaohongshuReviewUrl,
-        instagramReviewUrl: user.profile.instagramReviewUrl,
         
         // 配色方案
         primaryColor: user.profile.primaryColor,

@@ -32,9 +32,6 @@ interface Profile {
   // 评价平台链接
   googleReviewUrl?: string | null;
   yelpReviewUrl?: string | null;
-  facebookReviewUrl?: string | null;
-  xiaohongshuReviewUrl?: string | null;
-  instagramReviewUrl?: string | null;
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
@@ -178,18 +175,12 @@ export default function CardPage() {
           }
         }
         // 如果是小红书，使用数据库中的链接
+        // 注意：小红书需要特殊处理，先尝试唤起 app，失败后才打开网页
         if (platform.id === 'xiaohongshu' && profile.xiaohongshu) {
-          if (profile.xiaohongshu.startsWith('http')) {
-            return { 
-              ...platform, 
-              appScheme: profile.xiaohongshu,
-              fallbackUrl: profile.xiaohongshu
-            }
-          } else {
-            return { 
-              ...platform, 
-              fallbackUrl: profile.xiaohongshu
-            }
+          // 无论是什么链接，都只替换 fallbackUrl，保留原 app scheme
+          return { 
+            ...platform, 
+            fallbackUrl: profile.xiaohongshu
           }
         }
         // 如果是 Facebook，使用数据库中的链接
@@ -245,36 +236,6 @@ export default function CardPage() {
             return { 
               ...platform, 
               fallbackUrl: profile.yelpReviewUrl
-            }
-          }
-        }
-        // 如果是小红书（评价），使用数据库中的链接
-        if (platform.id === 'xiaohongshu' && profile.xiaohongshuReviewUrl) {
-          if (profile.xiaohongshuReviewUrl.startsWith('http')) {
-            return { 
-              ...platform, 
-              appScheme: profile.xiaohongshuReviewUrl,
-              fallbackUrl: profile.xiaohongshuReviewUrl
-            }
-          } else {
-            return { 
-              ...platform, 
-              fallbackUrl: profile.xiaohongshuReviewUrl
-            }
-          }
-        }
-        // 如果是 Instagram（评价），使用数据库中的链接
-        if (platform.id === 'instagram' && profile.instagramReviewUrl) {
-          if (profile.instagramReviewUrl.startsWith('http')) {
-            return { 
-              ...platform, 
-              appScheme: profile.instagramReviewUrl,
-              fallbackUrl: profile.instagramReviewUrl
-            }
-          } else {
-            return { 
-              ...platform, 
-              fallbackUrl: profile.instagramReviewUrl
             }
           }
         }
