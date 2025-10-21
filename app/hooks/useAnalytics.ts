@@ -31,7 +31,7 @@ export function useAnalytics(slug: string) {
     try {
       const visitorId = getOrCreateVisitorId()
       
-      await fetch('/api/analytics', {
+      const response = await fetch('/api/analytics', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,6 +42,13 @@ export function useAnalytics(slug: string) {
           ...params
         })
       })
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Analytics tracking failed:', errorData)
+      } else {
+        console.log(`✅ Analytics tracked: ${params.eventType}`, params)
+      }
     } catch (error) {
       // 静默失败，不影响用户体验
       console.error('Analytics tracking failed:', error)

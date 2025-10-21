@@ -327,11 +327,11 @@ export default function CardPage() {
 
   // Handle save contact
   const handleSaveContact = () => {
+    // 追踪保存联系人（在条件检查之前，确保总是追踪用户意图）
+    trackSaveContact();
+    
     if (!contactInfo || !profile) return;
     triggerHaptic('medium');
-    
-    // 追踪保存联系人
-    trackSaveContact();
     
     // Generate vCard
     const saveContact = (contact: ContactInfo) => {
