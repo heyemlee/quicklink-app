@@ -102,8 +102,8 @@ export const followPlatforms: PlatformConfig[] = [
     icon: "/icons/xiaohongshu.png",
     isImage: true,
     color: "bg-red-500",
-    appScheme: "xhsdiscover://",
-    fallbackUrl: "https://www.xiaohongshu.com/explore",
+    appScheme: "xhsdiscover://user/YOUR_USER_ID",
+    fallbackUrl: "https://www.xiaohongshu.com/user/profile/YOUR_USER_ID",
   },
 ];
 
