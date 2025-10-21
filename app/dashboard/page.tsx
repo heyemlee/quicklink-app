@@ -261,8 +261,66 @@ export default function DashboardPage() {
     }
   }
 
+  // 验证选中的平台是否都有对应的链接
+  const validatePlatformLinks = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = []
+    
+    // 平台ID到字段名的映射
+    const platformFieldMap: Record<string, { field: keyof FormData; label: string }> = {
+      wechat: { field: 'wechatId', label: '微信' },
+      instagram: { field: 'instagram', label: 'Instagram' },
+      facebook: { field: 'facebook', label: 'Facebook' },
+      tiktok: { field: 'tiktok', label: 'TikTok' },
+      xiaohongshu: { field: 'xiaohongshu', label: '小红书' },
+      website: { field: 'websiteUrl', label: 'Website' },
+      googlemap: { field: 'googleReviewUrl', label: 'Google' },
+      yelp: { field: 'yelpReviewUrl', label: 'Yelp' },
+    }
+    
+    // 检查关注平台
+    if (formData.showFollow && formData.followPlatforms) {
+      formData.followPlatforms.forEach(platformId => {
+        const mapping = platformFieldMap[platformId]
+        if (mapping) {
+          const value = formData[mapping.field]
+          if (!value || (typeof value === 'string' && value.trim() === '')) {
+            errors.push(`请为 ${mapping.label} 平台添加链接`)
+          }
+        }
+      })
+    }
+    
+    // 检查评价平台
+    if (formData.showReview && formData.reviewPlatforms) {
+      formData.reviewPlatforms.forEach(platformId => {
+        const mapping = platformFieldMap[platformId]
+        if (mapping) {
+          const value = formData[mapping.field]
+          if (!value || (typeof value === 'string' && value.trim() === '')) {
+            errors.push(`请为 ${mapping.label} 平台添加链接`)
+          }
+        }
+      })
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    }
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
+    // 验证平台链接
+    const validation = validatePlatformLinks()
+    if (!validation.isValid) {
+      setMessage(validation.errors.join('\n'))
+      setModalType('error')
+      setShowModal(true)
+      return
+    }
+    
     setSaving(true)
     setMessage('')
 
@@ -406,9 +464,20 @@ export default function DashboardPage() {
                       }`}>
                         {modalType === 'success' ? 'Success' : 'Failed'}
                       </h3>
-                      <p className="text-sm text-gray-600">
-                        {message}
-                      </p>
+                      {message.includes('\n') ? (
+                        <ul className="text-sm text-gray-600 text-left space-y-1">
+                          {message.split('\n').map((line, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="text-red-500 mr-2">•</span>
+                              <span>{line}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-gray-600">
+                          {message}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1125,10 +1194,9 @@ export default function DashboardPage() {
                               value={formData.contactInfoWebsite || ''}
                               onChange={handleChange}
                               onBlur={handleUrlBlur}
-                              placeholder="www.abc.com 或 https://www.abc.com"
+                              placeholder="www.abc.com"
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
                             />
-                            <p className="text-xs text-gray-500 mt-1">系统会自动添加 https:// 前缀</p>
                           </div>
 
                           <div>
@@ -1248,10 +1316,9 @@ export default function DashboardPage() {
                                 value={formData.websiteUrl || ''}
                                 onChange={handleChange}
                                 onBlur={handleUrlBlur}
-                                placeholder="www.example.com 或 https://www.example.com"
+                                placeholder="www.example.com"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm"
                               />
-                              <p className="text-xs text-gray-500 mt-1">系统会自动添加 https:// 前缀</p>
                             </div>
                           </div>
                         </div>
