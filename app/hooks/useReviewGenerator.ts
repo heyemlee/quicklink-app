@@ -12,7 +12,7 @@ export const useReviewGenerator = () => {
     triggerHaptic('light');
     
     try {
-      const response = await fetch("/api/generate-review", {
+      const response = await fetch("/api/generate_review", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

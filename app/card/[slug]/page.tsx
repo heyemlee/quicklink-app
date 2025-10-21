@@ -256,9 +256,6 @@ export default function CardPage() {
     if (buttonClickTimeout.current) return;
     
     triggerHaptic('medium');
-    setSelectedPlatform(platform);
-    setIsModalOpen(true);
-    setCopySuccess(false);
     
     // 追踪评价平台点击
     trackPlatformClick(platform.id, 'review');
@@ -267,6 +264,20 @@ export default function CardPage() {
       buttonClickTimeout.current = null;
     }, 500);
     
+    // ===== Google & Yelp 平台：直接跳转模式 =====
+    // 类似 TikTok 平台，直接跳转到配置的评价链接
+    // 暂时不使用 AI 生成评价和弹窗功能
+    // 如需后续实现 AI 功能，删除此条件判断即可恢复
+    if (platform.id === 'yelp' || platform.id === 'googlemap') {
+      await openApp(platform.appScheme, platform.fallbackUrl);
+      return;
+    }
+    // ===== End of 直接跳转模式 =====
+    
+    // 其他平台：使用 AI 功能和弹窗
+    setSelectedPlatform(platform);
+    setIsModalOpen(true);
+    setCopySuccess(false);
     await generateReview(platform.id);
   };
 
