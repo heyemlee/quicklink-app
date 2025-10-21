@@ -175,12 +175,20 @@ export default function CardPage() {
           }
         }
         // 如果是小红书，使用数据库中的链接
-        // 注意：小红书需要特殊处理，先尝试唤起 app，失败后才打开网页
         if (platform.id === 'xiaohongshu' && profile.xiaohongshu) {
-          // 无论是什么链接，都只替换 fallbackUrl，保留原 app scheme
-          return { 
-            ...platform, 
-            fallbackUrl: profile.xiaohongshu
+          // 如果是 HTTPS 链接，同时替换 appScheme 和 fallbackUrl（直接打开网页）
+          // 否则只替换 fallbackUrl，保留 appScheme 用于唤起 app
+          if (profile.xiaohongshu.startsWith('http')) {
+            return { 
+              ...platform, 
+              appScheme: profile.xiaohongshu,
+              fallbackUrl: profile.xiaohongshu
+            }
+          } else {
+            return { 
+              ...platform, 
+              fallbackUrl: profile.xiaohongshu
+            }
           }
         }
         // 如果是 Facebook，使用数据库中的链接
